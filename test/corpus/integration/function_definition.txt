@@ -1,0 +1,413 @@
+# def / no arguments
+
+def fun() do
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments)),
+    DoBlock(
+      "do",
+      "end")))
+
+# def / no arguments without parentheses
+
+def fun do
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Identifier),
+    DoBlock(
+      "do",
+      "end")))
+
+# def / one argument
+
+def fun(x) do
+  x
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier))),
+    DoBlock(
+      "do"
+      Identifier,
+      "end")))
+
+# def / one argument without parentheses
+
+def fun x do
+  x
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier))),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# def / many arguments
+
+def fun(x, y) do
+  x + y
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier,
+          Identifier))),
+    DoBlock(
+      "do",
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier),
+      "end")))
+
+# def / many arguments without parentheses
+
+def fun x, y do
+  x + y
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier,
+          Identifier))),
+    DoBlock(
+      "do",
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier),
+      "end")))
+
+# def / default arguments
+
+def fun x, y \\ 1 do
+  x + y
+end
+
+def fun(x, y \\ 1) do
+  x + y
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier,
+          BinaryOperator(
+            Identifier,
+            Operator,
+            Integer)))),
+    DoBlock(
+      "do",
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier),
+      "end")),
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier,
+          BinaryOperator(
+            Identifier,
+            Operator,
+            Integer)))),
+    DoBlock(
+      "do",
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier),
+      "end")))
+
+# def / keyword do block
+
+def fun(), do: 1
+def fun(x), do: x
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments),
+      Keywords(
+        Pair(
+          Keyword,
+          Integer)))),
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier)),
+      Keywords(
+        Pair(
+          Keyword,
+          Identifier)))))
+
+# def / pattern matching
+
+def fun([{x, y} | tail]) do
+  x + y
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          List(
+            BinaryOperator(
+              Tuple(
+                Identifier,
+                Identifier),
+              Operator,
+              Identifier))))),
+    DoBlock(
+      "do",
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier),
+      "end")))
+
+# def / with guard
+
+def fun(x) when x == 1 do
+  x
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      WhenOperator(
+        Call(
+          Identifier,
+          Arguments(
+            Identifier)),
+        WordOperator,
+        Right(
+          BinaryOperator(
+            Identifier,
+            Operator,
+            Integer)))),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# def / with guard / multiple guards
+
+def fun(x) when x > 10 when x < 5 do
+  x
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      WhenOperator(
+        Call(
+          Identifier,
+          Arguments(
+            Identifier)),
+        WordOperator,
+        Right(
+          WhenOperator(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              Integer),
+            WordOperator,
+            Right(
+              BinaryOperator(
+                Identifier,
+                Operator,
+                Integer)))))),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# defp
+
+defp fun(x) do
+  x
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier))),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# defmacro
+
+defmacro fun(x) do
+  quote do
+    [unquote(x)]
+  end
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier))),
+    DoBlock(
+      "do",
+      KernelCall(
+        Identifier,
+        DoBlock(
+          "do",
+          List(
+            KernelCall(
+              Identifier,
+              Arguments(
+                Identifier))),
+          "end")),
+      "end")))
+
+# defguard
+
+defguard is_even(term) when is_integer(term) and rem(term, 2) == 0
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      WhenOperator(
+        Call(
+          Identifier,
+          Arguments(
+            Identifier)),
+        WordOperator,
+        Right(
+          BinaryOperator(
+            Call(
+              Identifier,
+              Arguments(
+                Identifier)),
+            WordOperator,
+            BinaryOperator(
+              Call(
+                Identifier,
+                Arguments(
+                  Identifier,
+                  Integer)),
+              Operator,
+              Integer)))))))
+
+# def in macro
+
+def unquote(name)(unquote_splicing(args)) do
+  unquote(compiled)
+end
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        KernelCall(
+          Identifier,
+          Arguments(
+            Identifier)),
+        Arguments(
+          KernelCall(
+            Identifier,
+            Arguments(
+              Identifier))))),
+    DoBlock(
+      "do",
+      KernelCall(
+        Identifier,
+        Arguments(
+          Identifier)),
+      "end")))

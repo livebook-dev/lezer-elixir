@@ -1,0 +1,10 @@
+# simple literal
+
+true
+false
+
+==>
+
+Source(
+  Boolean,
+  Boolean)

@@ -1,0 +1,49 @@
+# simple literal
+
+1234567890.1234567890
+-1234567890.1234567890
+-1_234_567_890.123_456_789_0
+
+==>
+
+Source(
+  Float,
+  UnaryOperator(
+    Operator,
+    Float),
+  UnaryOperator(
+    Operator,
+    Float))
+
+# scientific notation
+
+1.0e6
+1.0e+6
+1.0e-6
+-1.0e6
+-1.0e+6
+-1.0e-6
+1.0E6
+1.0E+6
+1.0E-6
+1_234_567_890.123_456_789_0e1_234_567_890
+
+==>
+
+Source(
+  Float,
+  Float,
+  Float,
+  UnaryOperator(
+    Operator,
+    Float),
+  UnaryOperator(
+    Operator,
+    Float),
+  UnaryOperator(
+    Operator,
+    Float),
+  Float,
+  Float,
+  Float,
+  Float)

@@ -1,0 +1,379 @@
+# no arguments
+
+fn() -> 1 end
+fn () -> 1 end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments,
+      Operator,
+      Body(
+        Integer)),
+    "end"),
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments,
+      Operator,
+      Body(
+        Integer)),
+    "end"))
+
+# no arguments without parentheses
+
+fn -> 1 end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Operator,
+      Body(
+        Integer)),
+    "end"))
+
+# one argument
+
+fn(x) -> x end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments(
+        Identifier),
+      Operator,
+      Body(
+        Identifier)),
+    "end"))
+
+# one argument without parentheses
+
+fn x -> x end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments(
+        Identifier),
+      Operator,
+      Body(
+        Identifier)),
+    "end"))
+
+# many arguments
+
+fn(x, y, z) -> x + y end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments(
+        Identifier,
+        Identifier,
+        Identifier),
+      Operator,
+      Body(
+        BinaryOperator(
+          Identifier,
+          Operator,
+          Identifier))),
+      "end"))
+
+# many arguments without parentheses
+
+fn x, y -> x + y end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments(
+        Identifier,
+        Identifier),
+      Operator,
+      Body(
+        BinaryOperator(
+          Identifier,
+          Operator,
+          Identifier))),
+    "end"))
+
+# multiline body
+
+fn x, y ->
+  y
+  x
+end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments(
+        Identifier,
+        Identifier),
+      Operator,
+      Body(
+        Identifier,
+        Identifier)),
+    "end"))
+
+# multiline body with extra newlines
+
+fn x, y ->
+  y
+
+  x
+
+end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments(
+        Identifier,
+        Identifier),
+      Operator,
+      Body(
+        Identifier,
+        Identifier)),
+    "end"))
+
+# many clauses
+
+fn
+  1 -> :yes
+  2 -> :no
+  other -> :maybe
+end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments(
+        Integer),
+      Operator,
+      Body(
+        Atom)),
+    StabClause(
+      Arguments(
+        Integer),
+      Operator,
+      Body(
+        Atom)),
+    StabClause(
+      Arguments(
+        Identifier),
+      Operator,
+      Body(
+        Atom)),
+    "end"))
+
+# with guard / no arguments
+
+fn
+  () when node() == :nonode@nohost -> true
+end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      WhenOperator(
+        Arguments,
+        WordOperator,
+        Right(
+          BinaryOperator(
+            Call(
+              Identifier,
+              Arguments),
+            Operator,
+            Atom))),
+      Operator,
+      Body(
+        Boolean)),
+    "end"))
+
+# with guard / one argument
+
+fn
+  x when x == [] -> x
+end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      WhenOperator(
+        Arguments(
+          Identifier),
+        WordOperator,
+        Right(
+          BinaryOperator(
+            Identifier,
+            Operator,
+            List))),
+      Operator,
+      Body(
+        Identifier)),
+    "end"))
+
+# with guard / multiple arguments
+
+fn
+  x, y when x == [] -> x
+end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      WhenOperator(
+        Arguments(
+          Identifier,
+          Identifier),
+        WordOperator,
+        Right(
+          BinaryOperator(
+            Identifier,
+            Operator,
+            List))),
+      Operator,
+      Body(
+        Identifier)),
+    "end"))
+
+# with guard / arguments in parentheses
+
+fn
+  (x, y) when y == [] -> y
+end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      WhenOperator(
+        Arguments(
+          Identifier,
+          Identifier),
+        WordOperator,
+        Right(
+          BinaryOperator(
+            Identifier,
+            Operator,
+            List))),
+      Operator,
+      Body(
+        Identifier)),
+    "end"))
+
+# with guard / multiple guards
+
+fn
+  x when x > 10 when x < 5 -> x
+end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      WhenOperator(
+        Arguments(
+          Identifier),
+        WordOperator,
+        Right(
+          WhenOperator(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              Integer),
+            WordOperator,
+            Right(
+              BinaryOperator(
+                Identifier,
+                Operator,
+                Integer))))),
+      Operator,
+      Body(
+        Identifier)),
+    "end"))
+
+# pattern matching
+
+fn
+  [h | tail] -> {h, tail}
+  %{x: x} when x == 1 -> 1
+end
+
+==>
+
+Source(
+  AnonymousFunction(
+    "fn",
+    StabClause(
+      Arguments(
+        List(
+          BinaryOperator(
+            Identifier,
+            Operator,
+            Identifier))),
+      Operator,
+      Body(
+        Tuple(
+          Identifier,
+          Identifier))),
+    StabClause(
+      WhenOperator(
+        Arguments(
+          Map(
+            MapContent(
+              Keywords(
+                Pair(
+                  Keyword,
+                  Identifier))))),
+        WordOperator,
+        Right(
+          BinaryOperator(
+            Identifier,
+            Operator,
+            Integer))),
+      Operator,
+      Body(
+        Integer)),
+    "end"))

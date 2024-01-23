@@ -1,0 +1,230 @@
+# empty
+
+%User{}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      Alias)))
+
+# from keywords
+
+%User{a: 1, b: 2}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      Alias),
+    MapContent(
+      Keywords(
+        Pair(
+          Keyword,
+          Integer),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# from arrow entries
+
+%User{:a => 1, "b" => 2, c => 3}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      Alias),
+    MapContent(
+      BinaryOperator(
+        Atom,
+        Operator,
+        Integer),
+      BinaryOperator(
+        String(
+          QuotedContent),
+        Operator,
+        Integer),
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Integer))))
+
+# from both arrow entries and keywords
+
+%User{"a" => 1, b: 2, c: 3}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      Alias),
+    MapContent(
+      BinaryOperator(
+        String(
+          QuotedContent),
+        Operator,
+        Integer),
+      Keywords(
+        Pair(
+          Keyword,
+          Integer),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# trailing separator
+
+%User{"a" => 1,}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      Alias),
+    MapContent(
+      BinaryOperator(
+        String(
+          QuotedContent),
+        Operator,
+        Integer))))
+
+# update syntax
+
+%User{user | name: "Jane", email: "jane@example.com"}
+%User{user | "name" => "Jane"}
+
+==>
+
+Source(
+  Map(
+    Struct( Alias),
+    MapContent(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Keywords(
+          Pair(
+            Keyword,
+            String(
+              QuotedContent)),
+          Pair(
+            Keyword,
+            String(
+              QuotedContent)))))),
+  Map(
+    Struct(
+      Alias),
+    MapContent(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        BinaryOperator(
+          String(
+            QuotedContent),
+          Operator,
+          String(
+            QuotedContent))))))
+
+# unused struct identifier
+
+%_{}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      UnderscoredIdentifier)))
+
+# matching struct identifier
+
+%name{}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      Identifier)))
+
+# pinned struct identifier
+
+%^name{}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      UnaryOperator(
+        Operator,
+        Identifier))))
+
+
+# with special identifier
+
+%__MODULE__{}
+%__MODULE__.Child{}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      SpecialIdentifier)),
+  Map(
+    Struct(
+      Dot(
+        SpecialIdentifier,
+        Operator,
+        Right(
+          Alias)))))
+
+# with atom
+
+%:"Elixir.Mod"{}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      QuotedAtom(
+        QuotedContent))))
+
+# with call
+
+%fun(){}
+%Mod.fun(){}
+%fun.(){}
+
+==>
+
+Source(
+  Map(
+    Struct(
+      Call(
+        Identifier,
+        Arguments))),
+  Map(
+    Struct(
+      Call(
+        Dot(
+          Alias,
+          Operator,
+          Right(
+            Identifier)),
+        Arguments))),
+  Map(
+    Struct(
+      Call(
+        Dot(
+          Identifier,
+          Operator),
+        Arguments))))

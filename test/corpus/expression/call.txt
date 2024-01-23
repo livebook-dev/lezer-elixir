@@ -1,0 +1,958 @@
+# local call / no arguments
+
+fun()
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments))
+
+# local call / arguments in parentheses
+
+fun(a)
+fun([1, 2], option: true, other: 5)
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Identifier)),
+  Call(
+    Identifier,
+    Arguments(
+      List(
+        Integer,
+        Integer),
+      Keywords(
+        Pair(
+          Keyword,
+          Boolean),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# local call / arguments without parentheses
+
+fun a
+fun {}
+fun [1, 2], option: true, other: 5
+fun +: 1
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Identifier)),
+  Call(
+    Identifier,
+    Arguments(
+      Tuple)),
+  Call(
+    Identifier,
+    Arguments(
+      List(
+        Integer,
+        Integer),
+      Keywords(
+        Pair(
+          Keyword,
+          Boolean),
+        Pair(
+          Keyword,
+          Integer)))),
+    Call(
+      Identifier,
+      Arguments(
+        Keywords(
+          Pair(
+            Keyword,
+            Integer)))))
+
+# local call / arguments without parentheses / multiline
+
+fun [1, 2],
+  option: true,
+  other: 5
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      List(
+        Integer,
+        Integer),
+      Keywords(
+        Pair(
+          Keyword,
+          Boolean),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# local call / nested with parentheses
+
+outer_fun(inner_fun(a))
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier)))))
+
+# local call / nested without parentheses (right associativity)
+
+outer_fun inner_fun a, b
+outer_fun inner_fun do: 1
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier,
+          Identifier)))),
+  Call(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Keywords(
+            Pair(
+              Keyword,
+              Integer)))))))
+
+# local call / precedence with operator
+
+outer_fun 1 + 1
+1 + inner_fun 1
+outer_fun 1 + inner_fun 1
+fun 1, 2 |> other_fun
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      BinaryOperator(
+        Integer,
+        Operator,
+        Integer))),
+  BinaryOperator(
+    Integer,
+    Operator,
+    Call(
+      Identifier,
+        Arguments(
+          Integer))),
+  Call(
+    Identifier,
+    Arguments(
+      BinaryOperator(
+        Integer,
+        Operator,
+        Call(
+          Identifier,
+          Arguments(
+            Integer))))),
+  Call(
+    Identifier,
+    Arguments(
+      Integer,
+      PipeOperator(
+        Integer,
+        Operator,
+        Right(
+          Identifier)))))
+
+# local call / treats nonimmediate parentheses as a block argument
+
+fun (x)
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Block(
+        Identifier))))
+
+# remote call / no arguments
+
+Mod.fun()
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments))
+
+# remote call / no arguments without parentheses
+
+Mod.fun
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier))))
+
+# remote call / arguments in parentheses
+
+Mod.fun(a)
+Mod.fun([1, 2], option: true, other: 5)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier)),
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      List(
+        Integer,
+        Integer),
+      Keywords(
+        Pair(
+          Keyword,
+          Boolean),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# remote call / arguments without parentheses
+
+Mod.fun a
+Mod.fun [1, 2], option: true, other: 5
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier)),
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      List(
+        Integer,
+        Integer),
+      Keywords(
+        Pair(
+          Keyword,
+          Boolean),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# remote call / nested with parentheses
+
+Mod.outer_fun(Mod.inner_fun(a))
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Call(
+        Dot(
+          Alias,
+          Operator,
+          Right(
+            Identifier)),
+        Arguments(
+          Identifier)))))
+
+# remote call / nested without parentheses (right associativity)
+
+Mod.outer_fun Mod.inner_fun a
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Call(
+        Dot(
+          Alias,
+          Operator,
+          Right(
+            Identifier)),
+        Arguments(
+          Identifier)))))
+
+# remote call / precedence with operator
+
+Mod.outer_fun 1 + 1
+1 + Mod.inner_fun 1
+Mod.outer_fun 1 + Mod.inner_fun 1
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      BinaryOperator(
+        Integer,
+        Operator,
+        Integer))),
+  BinaryOperator(
+    Integer,
+    Operator,
+    Call(
+      Dot(
+        Alias,
+        Operator,
+        Right(
+          Identifier)),
+      Arguments(
+        Integer))),
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      BinaryOperator(
+        Integer,
+        Operator,
+        Call(
+          Dot(
+            Alias,
+            Operator,
+            Right(
+              Identifier)),
+          Arguments(
+            Integer))))))
+
+# remote call / treats nonimmediate parentheses as a block argument
+
+Mod.fun (x)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Block(
+        Identifier))))
+
+# remote call / multi-level alias
+
+Mod1.Mod2.Mod3.fun(a)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier)))
+
+# remote call / operator
+
+Kernel.+(a, b)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        OperatorIdentifier(
+          Operator))),
+    Arguments(
+      Identifier,
+      Identifier)))
+
+# remote call / quoted function name
+
+Mod."fun"(a)
+Mod.'fun'(a)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        String(
+          QuotedContent))),
+    Arguments(
+      Identifier)),
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Charlist(
+          QuotedContent))),
+    Arguments(
+      Identifier)))
+
+# remote call / atom literal module
+
+:mod.fun(a)
+:"Elixir.Mod".fun(a)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Atom,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier)),
+  Call(
+    Dot(
+      QuotedAtom(
+        QuotedContent),
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier)))
+
+# anonymous call / no arguments
+
+fun.()
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Identifier,
+      Operator),
+    Arguments))
+
+# anonymous call / arguments in parentheses
+
+fun.(a)
+fun.([1, 2], option: true, other: 5)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Identifier,
+      Operator),
+    Arguments(
+      Identifier)),
+  Call(
+    Dot(
+      Identifier,
+      Operator),
+    Arguments(
+      List(
+        Integer,
+        Integer),
+      Keywords(
+        Pair(
+          Keyword,
+          Boolean),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# anonymous call / nested with parentheses
+
+outer_fun.(inner_fun.(a))
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Identifier,
+      Operator),
+    Arguments(
+      Call(
+        Dot(
+          Identifier,
+      Operator),
+        Arguments(
+          Identifier)))))
+
+# mixed call types
+
+Mod.outer_fun mid_fun inner_fun.(a)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Call(
+            Dot(
+              Identifier,
+              Operator),
+            Arguments(
+              Identifier)))))))
+
+# identifier call
+
+mod.fun(a)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Identifier,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier)))
+
+# nested identifier call
+
+map.mod.fun(a)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Call(
+        Dot(
+          Identifier,
+          Operator,
+          Right(
+            Identifier))),
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier)))
+
+# reserved word call
+
+a.and
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Identifier,
+      Operator,
+      Right(
+        Identifier))))
+
+# range call
+
+(1..2).step
+(1..2//3).step
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Block(
+        BinaryOperator(
+          Integer,
+          Operator,
+          Integer)),
+      Operator,
+      Right(
+        Identifier))),
+  Call(
+    Dot(
+      Block(
+        BinaryOperator(
+          BinaryOperator(
+            Integer,
+            Operator,
+            Integer),
+          Operator,
+          Integer)),
+      Operator,
+      Right(
+        Identifier))))
+
+# multi-expression block call
+
+(
+  x
+  1..2
+).step
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Block(
+        Identifier,
+        BinaryOperator(
+          Integer,
+          Operator,
+          Integer)),
+      Operator,
+      Right(
+        Identifier))))
+
+# map call
+
+%{}.field
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Map,
+      Operator,
+      Right(
+        Identifier))))
+
+# struct call
+
+%Mod{}.field
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Map(
+        Struct(
+          Alias)),
+      Operator,
+      Right(
+        Identifier))))
+
+# arbitrary term call
+
+1.(1, 2)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Integer,
+      Operator),
+    Arguments(
+      Integer,
+      Integer)))
+
+# escaped newline call
+
+fun \
+a
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Identifier)))
+
+# keyword list trailing separator
+
+fun(option: true, other: 5,)
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Keywords(
+        Pair(
+          Keyword,
+          Boolean),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# newline before dot
+
+Mod
+  .fun(a)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier)))
+
+# newline after dot
+
+Mod.
+  fun(a)
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier)))
+
+# access syntax
+
+map[key]
+map[:key]
+
+==>
+
+Source(
+  AccessCall(
+    Identifier,
+    Identifier),
+  AccessCall(
+    Identifier,
+    Atom))
+
+# access syntax / does not allow whitespace
+
+map [key]
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      List(
+        Identifier))))
+
+# access syntax / precedence with dot call
+
+map.map[:key]
+map[:mod].fun
+
+==>
+
+Source(
+  AccessCall(
+    Call(
+      Dot(
+        Identifier,
+        Operator,
+        Right(
+          Identifier))),
+    Atom),
+  Call(
+    Dot(
+      AccessCall(
+        Identifier,
+        Atom),
+      Operator,
+      Right(
+        Identifier))))
+
+# access syntax / precedence with operators
+
+-x[:key]
+@x[:key]
+&x[:key]
+&1[:key]
+
+==>
+
+Source(
+  UnaryOperator(
+    Operator,
+    AccessCall(
+      Identifier,
+      Atom)),
+  AccessCall(
+    AtOperator(
+      Operator,
+      Identifier),
+    Atom),
+  CaptureOperator(
+    Operator,
+    AccessCall(
+      Identifier,
+      Atom)),
+  AccessCall(
+    CaptureOperand(
+      Operator,
+      Integer),
+    Atom))
+
+# double parenthesised call
+
+fun()()
+fun() ()
+fun(1)(1)
+Mod.fun()()
+fun.()()
+
+unquote(name)()
+
+==>
+
+Source(
+  Call(
+    Call(
+      Identifier,
+      Arguments),
+    Arguments),
+  Call(
+    Call(
+      Identifier,
+      Arguments),
+    Arguments),
+  Call(
+    Call(
+      Identifier,
+      Arguments(
+        Integer)),
+    Arguments(
+      Integer)),
+  Call(
+    Call(
+      Dot(
+        Alias,
+        Operator,
+        Right(
+          Identifier)),
+      Arguments),
+    Arguments),
+  Call(
+    Call(
+      Dot(
+        Identifier,
+        Operator),
+      Arguments),
+    Arguments),
+  Call(
+    KernelCall(
+      Identifier,
+      Arguments(
+        Identifier)),
+    Arguments))
+
+# [error] leading argument separator
+
+fun(, a)
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      ⚠,
+      Identifier)))
+
+# [error] trailing argument separator
+
+fun(a,)
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Identifier,
+      ⚠)))

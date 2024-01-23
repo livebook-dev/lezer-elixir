@@ -1,0 +1,244 @@
+# simple literal
+
+~s(content)
+~r{content}
+~w[content]
+~a<content>
+~b"content"
+~c'content'
+~d|content|
+~e/content/
+
+==>
+
+Source(
+  Sigil(SigilName, QuotedContent),
+  Sigil(SigilName, QuotedContent),
+  Sigil(SigilName, QuotedContent),
+  Sigil(SigilName, QuotedContent),
+  Sigil(SigilName, QuotedContent),
+  Sigil(SigilName, QuotedContent),
+  Sigil(SigilName, QuotedContent),
+  Sigil(SigilName, QuotedContent))
+
+
+# multiple lines
+
+~s"line 1
+line 2"
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent))
+
+# interpolation
+
+~s"hey #{name}!"
+~r/hey #{
+  name
+}!/
+~w{##{name}#}
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent,
+    Interpolation(
+      Identifier),
+    QuotedContent),
+  Sigil(
+    SigilName,
+    QuotedContent,
+    Interpolation(
+      Identifier),
+    QuotedContent),
+  Sigil(
+    SigilName,
+    QuotedContent,
+    Interpolation(
+      Identifier),
+    QuotedContent))
+
+# nested interpolation
+
+~s{this is #{~s{number #{1}}}!}
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent,
+    Interpolation(
+      Sigil(
+        SigilName,
+        QuotedContent,
+        Interpolation(
+          Integer))),
+    QuotedContent))
+
+# escape sequence
+
+~s{_\}_\n_\t_\r_\e_\\_\1_\x3f_\u0065\u0301_}
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent,
+    EscapeSequence,
+    EscapeSequence,
+    QuotedContent))
+
+# escaped interpolation
+
+~s/\#{1}/
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    EscapeSequence,
+    QuotedContent))
+
+# upper sigil / no interpolation
+
+~S"hey #{name}!"
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent))
+
+# upper sigil / no escape sequence
+
+~S"\n"
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent))
+
+# upper sigil / escape terminator
+
+~S"content \" content"
+~S{content \} content}
+~S/content \/ content/
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent),
+  Sigil(
+    SigilName,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent),
+  Sigil(
+    SigilName,
+    QuotedContent,
+    EscapeSequence,
+    QuotedContent))
+
+# upper sigil / multiple characters
+
+~MAT"1 2"
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent))
+
+# heredoc delimiter
+
+~s"""
+text
+with "quotes"
+"""
+
+~s'''
+text
+with 'quotes'
+'''
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent),
+  Sigil(
+    SigilName,
+    QuotedContent))
+
+# modifiers
+
+~r/left|right/i
+~r/left|right/iUx
+~r/left|right/0
+~r/left|right/u8
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    QuotedContent,
+    SigilModifiers),
+  Sigil(
+    SigilName,
+    QuotedContent,
+    SigilModifiers),
+  Sigil(
+    SigilName,
+    QuotedContent,
+    SigilModifiers),
+  Sigil(
+    SigilName,
+    QuotedContent,
+    SigilModifiers))
+
+# [error] accepts only a single character
+
+~mysigil"content"
+
+==>
+
+Source(
+  Sigil(
+    SigilName,
+    ⚠,
+    QuotedContent))

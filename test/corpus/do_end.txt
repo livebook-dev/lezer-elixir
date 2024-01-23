@@ -1,0 +1,1010 @@
+# call without arguments
+
+fun do
+  a
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# call with arguments in parentheses
+
+fun(a, b) do
+  c
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Identifier,
+      Identifier),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# call with arguments without parentheses
+
+fun a, b do
+  c
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Identifier,
+      Identifier),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# remote call
+
+Mod.fun do
+  a
+end
+
+==>
+
+Source(
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# sticks to the outermost call
+
+outer_fun inner_fun arg do
+  a
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Call(
+        Identifier,
+        Arguments(
+          Identifier))),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# newline before do
+
+fun x
+do
+  x
+end
+
+fun x
+# comment
+do
+  x
+end
+
+fun()
+do
+  x
+end
+
+Mod.fun x
+do
+  x
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      Identifier),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")),
+  Call(
+    Identifier,
+    Arguments(
+      Identifier),
+    Comment,
+    DoBlock(
+      "do",
+      Identifier,
+      "end")),
+  Call(
+    Identifier,
+    Arguments,
+    DoBlock(
+      "do",
+      Identifier,
+      "end")),
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      Identifier),
+    DoBlock(
+      "do",
+      Identifier,
+      "end")))
+
+# stab clause / no arguments
+
+fun do
+ () -> x
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(),
+        Operator,
+        Body(
+          Identifier)),
+      "end")))
+
+# stab clause / no arguments without parentheses
+
+fun do
+  -> x
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Operator,
+        Body(
+          Identifier)),
+      "end")))
+
+# stab clause / one argument
+
+fun do
+  x -> x
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Identifier),
+        Operator,
+        Body(
+          Identifier)),
+      "end")))
+
+# stab clause / many arguments
+
+fun do
+  x, y, 1 -> :ok
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Identifier,
+          Identifier,
+          Integer),
+        Operator
+        Body(
+          Atom)),
+      "end")))
+
+# stab clause / arguments in parentheses
+
+fun do
+  (x, y) -> :ok
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Identifier,
+          Identifier),
+        Operator,
+        Body(
+          Atom)),
+      "end")))
+
+# stab clause / many clauses
+
+fun do
+  1 -> :yes
+  2 -> :no
+  other -> :maybe
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Integer),
+        Operator,
+        Body(
+          Atom)),
+      StabClause(
+        Arguments(
+          Integer),
+        Operator,
+        Body(
+          Atom)),
+      StabClause(
+        Arguments(
+          Identifier),
+        Operator,
+        Body(
+          Atom)),
+      "end")))
+
+# stab clause / multiline expression
+
+fun do
+  x ->
+    y
+    x
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Identifier),
+        Operator,
+        Body(
+          Identifier,
+          Identifier)),
+      "end")))
+
+# stab clause / with guard / no arguments
+
+fun do
+  () when node() == :nonode@nohost -> true
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        WhenOperator(
+          Arguments(),
+          WordOperator,
+          Right(
+            BinaryOperator(
+              Call(
+                Identifier,
+                Arguments),
+              Operator,
+              Atom))),
+        Operator,
+        Body(
+          Boolean)),
+      "end")))
+
+# stab clause / with guard / one argument
+
+fun do
+  x when x == [] -> x
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        WhenOperator(
+          Arguments(
+            Identifier),
+          WordOperator,
+          Right(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              List))),
+        Operator,
+        Body(
+          Identifier)),
+      "end")))
+
+# stab clause / with guard / multiple arguments
+
+fun do
+  x, y when x == [] -> x
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        WhenOperator(
+          Arguments(
+            Identifier,
+            Identifier),
+          WordOperator,
+          Right(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              List))),
+        Operator,
+        Body(
+          Identifier)),
+      "end")))
+
+# stab clause / with guard / arguments in parentheses
+
+fun do
+  (x, y) when y == [] -> y
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        WhenOperator(
+          Arguments(
+            Identifier,
+            Identifier),
+          WordOperator,
+          Right(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              List))),
+        Operator,
+        Body(
+          Identifier)),
+      "end")))
+
+# stab clause / with guard / multiple guards
+
+fun do
+  x when x > 10 when x < 5 -> x
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        WhenOperator(
+          Arguments(
+            Identifier),
+          WordOperator,
+          Right(
+            WhenOperator(
+              BinaryOperator(
+                Identifier,
+                Operator,
+                Integer),
+              WordOperator,
+              Right(
+                BinaryOperator(
+                  Identifier,
+                  Operator,
+                  Integer))))),
+        Operator,
+        Body(
+          Identifier)),
+      "end")))
+
+# stab clause / edge cases / no stab
+
+foo do
+  a when a
+end
+
+foo do
+  ([])
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      WhenOperator(
+        Identifier,
+        WordOperator,
+        Right(
+          Identifier)),
+      "end")),
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Block(
+        List),
+      "end")))
+
+# stab clause / edge cases / "when" in arguments
+
+foo do
+  a when b, c when d == e -> 1
+  (a, a when b) -> 1
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        WhenOperator(
+          Arguments(
+            WhenOperator(
+              Identifier,
+              WordOperator,
+              Right(
+                Identifier)),
+            Identifier),
+          WordOperator,
+          Right(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              Identifier))),
+        Operator,
+        Body(
+          Integer)),
+      StabClause(
+        Arguments(
+          Identifier,
+          WhenOperator(
+            Identifier,
+            WordOperator,
+            Right(
+              Identifier))),
+        Operator,
+        Body(
+          Integer)),
+        "end")))
+
+# stab clause / edge cases / block argument
+
+foo do
+  (x; y) -> 1
+  ((x; y)) -> 1
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Block(
+            Identifier,
+            Identifier)),
+        Operator,
+        Body(
+          Integer)),
+      StabClause(
+        Arguments(
+          Block(
+            Identifier,
+            Identifier)),
+        Operator,
+        Body(
+          Integer)),
+      "end")))
+
+# stab clause / edge cases / operator with lower precedence than "when"
+
+foo do
+  x <- y when x -> y
+end
+
+foo do
+  (x <- y) when x -> y
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          BinaryOperator(
+            Identifier,
+            Operator,
+            WhenOperator(
+              Identifier,
+              WordOperator,
+              Right(
+                Identifier)))),
+        Operator,
+        Body(
+          Identifier)),
+      "end")),
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        WhenOperator(
+          Arguments(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              Identifier)),
+          WordOperator,
+          Right(
+            Identifier)),
+        Operator,
+        Body(
+          Identifier)),
+      "end")))
+
+# stab clause / edge cases / empty
+
+fun do->end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Operator),
+      "end")))
+
+# stab clause / edge cases / trailing call in multiline clause
+
+fun do
+  1 ->
+    1
+    x
+
+  1 ->
+    1
+end
+
+fun do
+  1 ->
+    1
+    Mod.fun
+
+  1 ->
+    1
+end
+
+fun do
+  1 ->
+    1
+    mod.fun
+
+  1 ->
+    1
+end
+
+fun do
+  1 ->
+    1
+
+  x 1 ->
+    1
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Integer),
+        Operator,
+        Body(
+          Integer,
+          Identifier)),
+      StabClause(
+        Arguments(
+          Integer),
+        Operator,
+        Body(
+          Integer)),
+      "end")),
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Integer),
+        Operator,
+        Body(
+          Integer,
+          Call(
+            Dot(
+              Alias,
+              Operator,
+              Right(
+                Identifier))))),
+      StabClause(
+        Arguments(
+          Integer),
+        Operator,
+        Body(
+          Integer)),
+      "end")),
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Integer),
+        Operator,
+        Body(
+          Integer,
+          Call(
+            Dot(
+              Identifier,
+              Operator,
+              Right(
+                Identifier))))),
+      StabClause(
+        Arguments(
+          Integer),
+        Operator,
+        Body(
+          Integer)),
+      "end")),
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Integer),
+        Operator,
+        Body(
+          Integer)),
+      StabClause(
+        Arguments(
+          Call(
+            Identifier,
+            Arguments(
+              Integer))),
+        Operator,
+        Body(
+          Integer)),
+      "end")))
+
+# stab clause / edge cases / empty right-hand-side
+
+fun do
+  x ->
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Identifier),
+        Operator,
+        Body),
+      "end")))
+
+# pattern matching
+
+fun do
+  [h | tail] -> {h, tail}
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          List(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              Identifier))),
+        Operator,
+        Body(
+          Tuple(
+            Identifier,
+            Identifier))),
+      "end")))
+
+# child blocks / after
+
+fun do
+  x
+after
+  y
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Identifier,
+      AfterBlock(
+        "after",
+        Identifier),
+      "end")))
+
+# child blocks / catch
+
+fun do
+  x
+catch
+  y
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Identifier,
+      CatchBlock(
+        "catch",
+        Identifier),
+      "end")))
+
+# child blocks / else
+
+fun do
+  x
+else
+  y
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Identifier,
+      ElseBlock(
+        "else",
+        Identifier),
+      "end")))
+
+# child blocks / rescue
+
+fun do
+  x
+rescue
+  y
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Identifier,
+      RescueBlock(
+        "rescue",
+        Identifier),
+      "end")))
+
+# child blocks / duplicated
+
+fun do
+  x
+after
+  y
+after
+  z
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Identifier,
+      AfterBlock(
+        "after",
+        Identifier),
+      AfterBlock(
+        "after",
+        Identifier),
+      "end")))
+
+# child blocks / mixed
+
+fun do
+  x
+else
+  y
+after
+  z
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Identifier,
+      ElseBlock(
+        "else",
+        Identifier),
+      AfterBlock(
+        "after",
+        Identifier),
+      "end")))
+
+# child blocks / stab clause
+
+fun do
+  x
+rescue
+  y -> y
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Identifier,
+      RescueBlock(
+        "rescue",
+        StabClause(
+          Arguments(
+            Identifier),
+          Operator,
+          Body(
+            Identifier))),
+      "end")))
+
+# child blocks / keyword pattern with child block start token
+
+fun do
+  x
+after
+after
+  after: 1 -> y
+end
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    DoBlock(
+      "do",
+      Identifier,
+      AfterBlock(
+        "after"),
+      AfterBlock(
+        "after",
+        StabClause(
+          Arguments(
+            Keywords(
+              Pair(
+                Keyword,
+                Integer))),
+          Operator,
+          Body(
+            Identifier))),
+      "end")))

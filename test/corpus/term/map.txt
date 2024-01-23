@@ -1,0 +1,164 @@
+# empty
+
+%{}
+
+==>
+
+Source(
+  Map)
+
+# from keywords
+
+%{a: 1, b: 2}
+
+==>
+
+Source(
+  Map(
+    MapContent(
+      Keywords(
+        Pair(
+          Keyword,
+          Integer),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# from arrow entries
+
+%{:a => 1, "b" => 2, c => 3}
+
+==>
+
+Source(
+  Map(
+    MapContent(
+      BinaryOperator(
+        Atom,
+        Operator,
+        Integer),
+      BinaryOperator(
+        String(
+          QuotedContent),
+        Operator,
+        Integer),
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Integer))))
+
+# from both arrow entries and keywords
+
+%{"a" => 1, b: 2, c: 3}
+
+==>
+
+Source(
+  Map(
+    MapContent(
+      BinaryOperator(
+        String(
+          QuotedContent),
+        Operator,
+        Integer),
+      Keywords(
+        Pair(
+          Keyword,
+          Integer),
+        Pair(
+          Keyword,
+          Integer)))))
+
+# trailing separator
+
+%{"a" => 1,}
+
+==>
+
+Source(
+  Map(
+    MapContent(
+      BinaryOperator(
+        String(
+          QuotedContent),
+        Operator,
+        Integer))))
+
+# update syntax
+
+%{user | name: "Jane", email: "jane@example.com"}
+%{user | "name" => "Jane"}
+
+==>
+
+Source(
+  Map(
+    MapContent(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Keywords(
+          Pair(
+            Keyword,
+            String(
+              QuotedContent)),
+          Pair(
+            Keyword,
+            String(
+              QuotedContent)))))),
+  Map(
+    MapContent(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        BinaryOperator(
+          String(
+            QuotedContent),
+          Operator,
+          String(
+            QuotedContent))))))
+
+# [error] ordering
+
+%{b: 2, c: 3, 1 => 1}
+
+==>
+
+Source(
+  Map(
+    MapContent(
+      Keywords(
+        Pair(
+          Keyword,
+          Integer),
+        Pair(
+          Keyword,
+          Integer)
+        Pair(
+          Keyword(⚠),
+          BinaryOperator(
+            Integer,
+            Operator,
+            Integer))))))
+
+# [error] missing separator
+
+%{"a" => 1 "b" => 2}
+
+==>
+
+Source(
+  Map(
+    MapContent(
+      BinaryOperator(
+        String(
+          QuotedContent),
+        Operator,
+        AccessCall(
+          Integer,
+          ⚠,
+          BinaryOperator(
+            String(
+              QuotedContent),
+            Operator,
+            Integer))))))

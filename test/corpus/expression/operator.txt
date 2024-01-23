@@ -1,0 +1,800 @@
+# unary
+
+@arg
+
++arg
+-arg
+!arg
+^arg
+not arg
+~~~arg
+
+&arg
+
+==>
+
+Source(
+  AtOperator(Operator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  UnaryOperator(WordOperator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  CaptureOperator(Operator, Identifier))
+
+# binary left associative
+
+a ** b ** c
+
+a * b * c
+a / b / c
+
+a + b + c
+a - b - c
+
+a ^^^ b ^^^ c
+
+a in b in c
+a not in b not in c
+
+a |> b |> c
+a <<< b <<< c
+a >>> b >>> c
+a <<~ b <<~ c
+a ~>> b ~>> c
+a <~ b <~ c
+a ~> b ~> c
+a <~> b <~> c
+a <|> b <|> c
+
+a < b < c
+a > b > c
+a <= b <= c
+a >= b >= c
+
+a == b == c
+a != b != c
+a =~ b =~ c
+a === b === c
+a !== b !== c
+
+a && b && c
+a &&& b &&& c
+a and b and c
+
+a || b || c
+a ||| b ||| c
+a or b or c
+
+a <- b <- c
+a \\ b \\ c
+
+==>
+
+Source(
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, WordOperator, Identifier), WordOperator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, WordOperator, Identifier), WordOperator, Identifier),
+  PipeOperator(PipeOperator(Identifier, Operator, Right(Identifier)), Operator, Right(Identifier)),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, WordOperator, Identifier), WordOperator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, WordOperator, Identifier), WordOperator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier))
+
+# binary right associative
+
+a ++ b ++ c
+a -- b -- c
+a +++ b +++ c
+a --- b --- c
+a .. b .. c
+a <> b <> c
+
+a = b = c
+
+a | b | c
+
+a :: b :: c
+
+a when b when c
+
+==>
+
+Source(
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)),
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)),
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)),
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)),
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)),
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)),
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)),
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)),
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)),
+  WhenOperator(Identifier, WordOperator, Right(WhenOperator(Identifier, WordOperator, Right(Identifier)))))
+
+# precedence on the same level falls back to associativity
+
+a * b / c
+a + b - c
+a in b not in c
+a <<< b >>> c
+a < b > c
+a == b != c
+a &&& b && c
+a ||| b || c
+a <- b \\ c
+
+a ++ b -- c
+
+==>
+
+Source(
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, WordOperator, Identifier), WordOperator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(BinaryOperator(Identifier, Operator, Identifier), Operator, Identifier),
+  BinaryOperator(Identifier, Operator, BinaryOperator(Identifier, Operator, Identifier)))
+
+# precedence on different levels
+
+& @ a - b
+a -- b + c
+a - b ++ c
+a = b <<< c
+
+a + b * c - d
+a ** b + c ** d
+
+==>
+
+Source(
+  CaptureOperator(
+    Operator,
+    BinaryOperator(
+      AtOperator(
+        Operator,
+        Identifier),
+      Operator,
+      Identifier)),
+  BinaryOperator(
+    Identifier,
+    Operator,
+    BinaryOperator(
+      Identifier,
+      Operator,
+      Identifier)),
+  BinaryOperator(
+    BinaryOperator(
+      Identifier,
+      Operator,
+      Identifier),
+    Operator,
+    Identifier),
+  BinaryOperator(
+    Identifier,
+    Operator,
+    BinaryOperator(
+      Identifier,
+      Operator,
+      Identifier)),
+  BinaryOperator(
+    BinaryOperator(
+      Identifier,
+      Operator,
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier)),
+    Operator,
+    Identifier),
+  BinaryOperator(
+    BinaryOperator(
+      Identifier,
+      Operator,
+      Identifier),
+    Operator,
+    BinaryOperator(
+      Identifier,
+      Operator,
+      Identifier)))
+
+# precedence determined by parentheses
+
+(& a) - b
+
+(a + b) * (c - d)
+
+==>
+
+Source(
+  BinaryOperator(
+    Block(
+      CaptureOperator(
+        Operator,
+        Identifier)),
+    Operator,
+    Identifier),
+  BinaryOperator(
+    Block(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier)),
+    Operator,
+    Block(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier))))
+
+# "not in" spacing
+
+a not    in b
+
+==>
+
+Source(
+  BinaryOperator(
+    Identifier,
+    WordOperator,
+    Identifier))
+
+# "not in" boundary
+
+fun not inARG
+
+==>
+
+Source(
+  Call(
+    Identifier,
+    Arguments(
+      UnaryOperator(
+        WordOperator,
+        Identifier))))
+
+# multiline / unary
+
+@
+arg
+
++
+arg
+
+-
+arg
+
+!
+arg
+
+^
+arg
+
+not
+arg
+
+~~~
+arg
+
+&
+arg
+
+==>
+
+Source(
+  AtOperator(Operator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  UnaryOperator(WordOperator, Identifier),
+  UnaryOperator(Operator, Identifier),
+  CaptureOperator(Operator, Identifier))
+
+# multiline / binary
+
+a
+**
+b
+
+a
+*
+b
+
+a
+/
+b
+
+a
+++
+b
+
+a
+--
+b
+
+a
++++
+b
+
+a
+---
+b
+
+a
+..
+b
+
+a
+<>
+b
+
+
+a
+^^^
+b
+
+a
+in
+b
+
+a
+not in
+b
+
+a
+|>
+b
+
+a
+<<<
+b
+
+a
+>>>
+b
+
+a
+<<~
+b
+
+a
+~>>
+b
+
+a
+<~
+b
+
+a
+~>
+b
+
+a
+<~>
+b
+
+a
+<|>
+b
+
+a
+<
+b
+
+a
+>
+b
+
+a
+<=
+b
+
+a
+>=
+b
+
+a
+==
+b
+
+a
+!=
+b
+
+a
+=~
+b
+
+a
+===
+b
+
+a
+!==
+b
+
+a
+&&
+b
+
+a
+&&&
+b
+
+a
+and
+b
+
+a
+||
+b
+
+a
+|||
+b
+
+a
+or
+b
+
+a
+=
+b
+
+a
+|
+b
+
+a
+::
+b
+
+a
+when
+b
+
+a
+<-
+b
+
+a
+\\
+b
+
+==>
+
+Source(
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, WordOperator, Identifier),
+  BinaryOperator(Identifier, WordOperator, Identifier),
+  PipeOperator(Identifier, Operator, Right(Identifier)),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, WordOperator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, WordOperator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier),
+  WhenOperator(Identifier, WordOperator, Right(Identifier)),
+  BinaryOperator(Identifier, Operator, Identifier),
+  BinaryOperator(Identifier, Operator, Identifier))
+
+# multiline / unary over binary
+
+a
++
+b
+
+a
+-
+b
+
+==>
+
+Source(
+  Identifier,
+  UnaryOperator(
+    Operator,
+    Identifier)
+  Identifier,
+  UnaryOperator(
+    Operator,
+    Identifier))
+
+# multiline / right operands
+
+x
+not in
+[y]
+
+x
+not in[y]
+
+:a
+++:b
+
+:a++
+:b
+
+==>
+
+Source(
+  BinaryOperator(
+    Identifier,
+    WordOperator,
+    List(
+      Identifier)),
+  BinaryOperator(
+    Identifier,
+    WordOperator,
+    List(
+      Identifier)),
+  BinaryOperator(
+    Atom,
+    Operator,
+    Atom),
+  BinaryOperator(
+    Atom,
+    Operator,
+    Atom))
+
+# multiline / unary over binary (precedence)
+
+x
+-
+y
+
+x
++
+y
+
+==>
+
+Source(
+  Identifier,
+  UnaryOperator(
+    Operator,
+    Identifier),
+  Identifier,
+  UnaryOperator(
+    Operator,
+    Identifier))
+
+# plus minus
+
+x+y
+x + y
+x+ y
+
+x +y
+x +y +z
+
+
+==>
+
+Source(
+  BinaryOperator(
+    Identifier,
+    Operator,
+    Identifier),
+  BinaryOperator(
+    Identifier,
+    Operator,
+    Identifier),
+  BinaryOperator(
+    Identifier,
+    Operator,
+    Identifier),
+  Call(
+    Identifier,
+    Arguments(
+      UnaryOperator(
+        Operator,
+        Identifier))),
+  Call(
+    Identifier,
+    Arguments(
+      UnaryOperator(
+        Operator,
+        Call(
+          Identifier,
+          Arguments(
+            UnaryOperator(
+              Operator,
+              Identifier)))))))
+
+# nullary range
+
+..
+Enum.to_list(..)
+not ..
+range = ..
+
+==>
+
+Source(
+  OperatorIdentifier(
+    Operator),
+  Call(
+    Dot(
+      Alias,
+      Operator,
+      Right(
+        Identifier)),
+    Arguments(
+      OperatorIdentifier(
+        Operator))),
+  UnaryOperator(
+    WordOperator
+    OperatorIdentifier(
+      Operator)),
+  BinaryOperator(
+    Identifier,
+    Operator,
+    OperatorIdentifier(
+      Operator)))
+
+# stepped range
+
+1 .. 2 // 3
+1..2//3
+0..1//-1
+
+==>
+
+Source(
+  BinaryOperator(
+    BinaryOperator(
+      Integer,
+      Operator,
+      Integer)
+    Operator,
+    Integer)
+  BinaryOperator(
+    BinaryOperator(
+      Integer,
+      Operator,
+      Integer),
+    Operator,
+    Integer),
+  BinaryOperator(
+    BinaryOperator(
+      Integer,
+      Operator,
+      Integer)
+    Operator,
+    UnaryOperator(
+      Operator,
+      Integer)))
+
+# stepped range / multiline
+
+1..2
+// 4
+
+==>
+
+Source(
+  BinaryOperator(
+    BinaryOperator(
+      Integer,
+      Operator,
+      Integer)
+    Operator,
+    Integer))
+
+# stepped ranges / blocks
+
+foo do end..bar do end//baz do end
+1..(2//3)
+(1..2)//3
+(1..2)//(3)
+
+==>
+
+Source(
+  BinaryOperator(
+    BinaryOperator(
+      Call(
+        Identifier,
+        DoBlock(
+          "do",
+          "end"))
+      Operator,
+      Call(
+        Identifier,
+        DoBlock(
+          "do",
+          "end"))),
+    Operator,
+    Call(
+      Identifier,
+      DoBlock(
+        "do",
+        "end"))),
+  BinaryOperator(
+    Integer,
+    Operator,
+    Block(
+      BinaryOperator(
+        Integer,
+        Operator,
+        Integer))),
+  BinaryOperator(
+    Block(
+      BinaryOperator(
+        Integer,
+        Operator,
+        Integer)),
+    Operator,
+    Integer),
+  BinaryOperator(
+    Block(
+      BinaryOperator(
+        Integer,
+        Operator,
+        Integer)),
+    Operator,
+    Block(
+      Integer)))

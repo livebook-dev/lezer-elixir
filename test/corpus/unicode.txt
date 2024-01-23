@@ -1,0 +1,99 @@
+# atom
+
+:time_μs
+:"£"
+:'£'
+:こんにちは世界
+:Ólá
+:olá
+:Olá
+
+==>
+
+Source(
+  Atom,
+  QuotedAtom(
+    QuotedContent),
+  QuotedAtom(
+    QuotedContent),
+  Atom,
+  Atom,
+  Atom,
+  Atom)
+
+# string
+
+"time_μs"
+"£"
+"こんにちは世界"
+"Ólá"
+"olá"
+"Olá"
+
+==>
+
+Source(
+  String(
+    QuotedContent),
+  String(
+    QuotedContent),
+  String(
+    QuotedContent),
+  String(
+    QuotedContent),
+  String(
+    QuotedContent),
+  String(
+    QuotedContent))
+
+# charlist
+
+'time_μs'
+'£'
+'こんにちは世界'
+'Ólá'
+'olá'
+'Olá'
+==>
+
+Source(
+  Charlist(
+    QuotedContent),
+  Charlist(
+    QuotedContent),
+  Charlist(
+    QuotedContent),
+  Charlist(
+    QuotedContent),
+  Charlist(
+    QuotedContent),
+  Charlist(
+    QuotedContent))
+
+# char
+
+?ł
+?μ
+?£
+?こ
+
+==>
+
+Source(
+  Char,
+  Char,
+  Char,
+  Char)
+
+# variable
+
+time_μs
+こんにちは世界
+olá
+
+==>
+
+Source(
+  Identifier,
+  Identifier,
+  Identifier)

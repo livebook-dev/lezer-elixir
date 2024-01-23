@@ -1,0 +1,134 @@
+# operator with arity (valid and supported by IEx.Helpers.h)
+
+::/2
+@ / 1
+& / 1
+not / 1
+not in / 2
+* / 2
+h +/2
+
+==>
+
+Source(
+  BinaryOperator(
+    OperatorIdentifier(
+      Operator),
+    Operator,
+    Integer),
+  BinaryOperator(
+    OperatorIdentifier(
+      Operator),
+    Operator,
+    Integer),
+  BinaryOperator(
+    OperatorIdentifier(
+      Operator),
+    Operator,
+    Integer),
+  BinaryOperator(
+    OperatorIdentifier(
+      WordOperator),
+    Operator,
+    Integer),
+  BinaryOperator(
+    OperatorIdentifier(
+      WordOperator),
+    Operator,
+    Integer),
+  BinaryOperator(
+    OperatorIdentifier(
+      Operator),
+    Operator,
+    Integer),
+  Call(
+    Identifier,
+    Arguments(
+      BinaryOperator(
+        OperatorIdentifier(
+          Operator),
+        Operator,
+        Integer))))
+
+# stab and slash ambiguity
+
+(-> / 2)
+(-> / / 2)
+
+==>
+
+Source(
+  Block(
+    BinaryOperator(
+      OperatorIdentifier(
+        Operator),
+      Operator,
+      Integer)),
+  Block(
+    StabClause(
+      Operator,
+      Body(
+        BinaryOperator(
+          OperatorIdentifier(
+            Operator),
+          Operator,
+          Integer)))))
+
+# unary operator and slash ambiguity
+
+& / 2
+& / / 2
+==>
+
+Source(
+  BinaryOperator(
+    OperatorIdentifier(
+      Operator),
+    Operator,
+    Integer),
+  CaptureOperator(
+    Operator,
+    BinaryOperator(
+      OperatorIdentifier(
+        Operator),
+      Operator,
+      Integer)))
+
+# map with identifiers
+
+%{a}
+%{a, b}
+
+==>
+
+Source(
+  Map(
+    MapContent(
+      Identifier)),
+  Map(
+    MapContent(
+      Identifier,
+      Identifier)))
+
+# def with remote call
+
+def Mod.fun(x), do: 1
+
+==>
+
+Source(
+  FunctionDefinitionCall(
+    Identifier,
+    Arguments(
+      Call(
+        Dot(
+          Alias,
+          Operator,
+          Right(
+            Identifier)),
+        Arguments(
+          Identifier)),
+      Keywords(
+        Pair(
+          Keyword,
+          Integer)))))

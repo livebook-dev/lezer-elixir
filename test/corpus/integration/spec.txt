@@ -1,0 +1,259 @@
+# without type parentheses
+
+@spec fun(atom, integer, keyword) :: string
+
+==>
+
+Source(
+  AtOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        BinaryOperator(
+          Call(
+            Identifier,
+            Arguments(
+              Identifier,
+              Identifier,
+              Identifier)),
+          Operator,
+          Identifier)))))
+
+# with type parentheses
+
+@spec fun(atom(), integer(), keyword()) :: string()
+
+==>
+
+Source(
+  AtOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        BinaryOperator(
+          Call(
+            Identifier,
+            Arguments(
+              Call(
+                Identifier,
+                Arguments),
+              Call(
+                Identifier,
+                Arguments),
+              Call(
+                Identifier,
+                Arguments))),
+          Operator,
+          Call(
+            Identifier,
+            Arguments))))))
+
+# with literals
+
+@spec fun(%{key: atom}) :: {:ok, atom} | {:error, binary}
+
+==>
+
+Source(
+  AtOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        BinaryOperator(
+          Call(
+            Identifier,
+            Arguments(
+              Map(
+                MapContent(
+                  Keywords(
+                    Pair(
+                      Keyword,
+                      Identifier)))))),
+          Operator,
+          BinaryOperator(
+            Tuple(
+              Atom,
+              Identifier),
+            Operator,
+            Tuple(
+              Atom,
+              Identifier)))))))
+
+# with function reference
+
+@spec fun((-> atom), (atom -> integer)) :: integer
+
+==>
+
+Source(
+  AtOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        BinaryOperator(
+          Call(
+            Identifier,
+            Arguments(
+              Block(
+                StabClause(
+                  Operator,
+                  Body(
+                    Identifier))),
+              Block(
+                StabClause(
+                  Arguments(
+                    Identifier),
+                  Operator,
+                  Body(
+                    Identifier))))),
+          Operator,
+          Identifier)))))
+
+# with remote type
+
+@spec fun(Keyword.t()) :: String.t()
+
+==>
+
+Source(
+  AtOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        BinaryOperator(
+          Call(
+            Identifier,
+            Arguments(
+              Call(
+                Dot(
+                  Alias,
+                  Operator,
+                  Right(
+                    Identifier)),
+                Arguments))),
+          Operator,
+          Call(
+            Dot(
+              Alias,
+              Operator,
+              Right(
+                Identifier)),
+            Arguments))))))
+
+# with type guard
+
+@spec fun(arg1, arg2) :: {arg1, arg2} when arg1: atom, arg2: integer
+
+==>
+
+Source(
+  AtOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        WhenOperator(
+          BinaryOperator(
+            Call(
+              Identifier,
+              Arguments(
+                Identifier,
+                Identifier)),
+            Operator,
+            Tuple(
+              Identifier,
+              Identifier)),
+          WordOperator,
+          Right(
+            Keywords(
+              Pair(
+                Keyword,
+                Identifier),
+              Pair(
+                Keyword,
+                Identifier))))))))
+
+# with named arguments
+
+@spec days_since_epoch(year :: integer, month :: integer, day :: integer) :: integer
+
+==>
+
+Source(
+  AtOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        BinaryOperator(
+          Call(
+            Identifier,
+            Arguments(
+              BinaryOperator(
+                Identifier,
+                Operator,
+                Identifier),
+              BinaryOperator(
+                Identifier,
+                Operator,
+                Identifier),
+              BinaryOperator(
+                Identifier,
+                Operator,
+                Identifier))),
+          Operator,
+          Identifier)))))
+
+# nonempty list
+
+@spec fun() :: [integer, ...]
+
+==>
+
+Source(
+  AtOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        BinaryOperator(
+          Call(
+            Identifier,
+            Arguments),
+          Operator,
+          List(
+            Identifier,
+            Identifier))))))
+
+# [error] type guard cannot end with keyword separator
+
+@spec fun(arg) :: arg when arg: atom,
+
+==>
+
+Source(
+  AtOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        WhenOperator(
+          BinaryOperator(
+            Call(
+              Identifier,
+              Arguments(
+                Identifier)),
+            Operator,
+            Identifier),
+          WordOperator,
+          Right(
+            Keywords(
+              Pair(
+                Keyword,
+                Identifier),
+              ⚠)))))))

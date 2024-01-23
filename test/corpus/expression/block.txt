@@ -1,0 +1,236 @@
+# empty
+
+()
+
+==>
+
+Source(
+  Block)
+
+# single expression
+
+(1)
+
+==>
+
+Source(
+  Block(
+    Integer))
+
+# multiple expressions separated by newline
+
+(
+  1
+  2
+)
+
+==>
+
+Source(
+  Block(
+    Integer,
+    Integer))
+
+# multiple expressions separated by semicolon
+
+(1;2)
+
+==>
+
+Source(
+  Block(
+    Integer,
+    Integer))
+
+# multiple expressions separated by mixed separators
+
+(
+  1
+
+  ;
+
+  2
+)
+
+==>
+
+Source(
+  Block(
+    Integer,
+    Integer))
+
+# leading semicolon
+
+(;1;2)
+
+==>
+
+Source(
+  Block(
+    Integer,
+    Integer))
+
+# trailing semicolon
+
+(1;2;)
+
+==>
+
+Source(
+  Block(
+    Integer,
+    Integer))
+
+# stab clause / multiple clauses
+
+(x -> x; y -> y
+ z -> z)
+
+==>
+
+Source(
+  Block(
+    StabClause(
+      Arguments(
+        Identifier),
+      Operator,
+      Body(
+        Identifier)),
+    StabClause(
+      Arguments(
+        Identifier),
+      Operator,
+      Body(
+        Identifier)),
+    StabClause(
+      Arguments(
+        Identifier),
+      Operator,
+      Body(
+        Identifier))))
+
+# stab clause / multiple arguments
+
+(x, y, z -> x)
+((x, y, z) -> x)
+
+==>
+
+Source(
+  Block(
+    StabClause(
+      Arguments(
+        Identifier,
+        Identifier,
+        Identifier),
+      Operator,
+      Body(
+        Identifier))),
+  Block(
+    StabClause(
+      Arguments(
+        Identifier,
+        Identifier,
+        Identifier),
+      Operator,
+      Body(
+        Identifier))))
+
+# stab clause / guard
+
+(x, y when x == y -> 1)
+((x, y when x == y -> 1))
+((x, y when x == y) -> 1)
+(x, y when x, z -> 1)
+((x, y when x, z -> 1))
+((x, y when x, z) -> 1)
+
+==>
+
+Source(
+  Block(
+    StabClause(
+      WhenOperator(
+        Arguments(
+          Identifier,
+          Identifier),
+        WordOperator,
+        Right(
+          BinaryOperator(
+            Identifier,
+            Operator,
+            Identifier))),
+      Operator,
+      Body(
+        Integer))),
+  Block(
+    Block(
+      StabClause(
+        WhenOperator(
+          Arguments(
+            Identifier,
+            Identifier),
+          WordOperator,
+          Right(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              Identifier))),
+        Operator,
+        Body(
+          Integer)))),
+  Block(
+    StabClause(
+      Arguments(
+        Identifier,
+        WhenOperator(
+          Identifier,
+          WordOperator,
+          Right(
+            BinaryOperator(
+              Identifier,
+              Operator,
+              Identifier)))),
+      Operator,
+      Body(
+        Integer))),
+  Block(
+    StabClause(
+      Arguments(
+        Identifier,
+        WhenOperator(
+          Identifier,
+          WordOperator,
+          Right(
+            Identifier)),
+        Identifier),
+      Operator,
+      Body(
+        Integer))),
+  Block(
+    Block(
+      StabClause(
+        Arguments(
+          Identifier,
+          WhenOperator(
+            Identifier,
+            WordOperator,
+            Right(
+              Identifier)),
+          Identifier),
+        Operator,
+        Body(
+          Integer)))),
+  Block(
+    StabClause(
+      Arguments(
+        Identifier,
+        WhenOperator(
+          Identifier,
+          WordOperator,
+          Right(
+            Identifier)),
+        Identifier),
+      Operator,
+      Body(
+        Integer))))

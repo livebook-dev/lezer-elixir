@@ -1,0 +1,84 @@
+# empty
+
+#
+
+==>
+
+Source(
+  Comment)
+
+# single line
+
+# single comment
+
+==>
+
+Source(
+  Comment)
+
+# multiple start symbols
+
+### multiple "#"
+
+==>
+
+Source(
+  Comment)
+
+# many consecutive lines
+
+# many
+# consecutive
+1
+# lines
+
+==>
+
+Source(
+  Comment,
+  Comment,
+  Integer,
+  Comment)
+
+# in the same line as regular code
+
+1 # comment
+
+==>
+
+Source(
+  Integer,
+  Comment)
+
+# matches inside a nested structure
+
+[ 1 ## inside a list
+, { 2 # and a tuple, too!
+  , 3 }
+]
+
+==>
+
+Source(
+  List(
+    Integer,
+    Comment,
+    Tuple(
+      Integer,
+      Comment,
+      Integer)))
+
+# does not match inside a string
+
+"# string"
+"this is #{interpolation}"
+
+==>
+
+Source(
+  String(
+    QuotedContent),
+  String(
+    QuotedContent,
+    Interpolation(
+      Identifier)))

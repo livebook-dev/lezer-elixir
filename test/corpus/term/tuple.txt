@@ -1,0 +1,72 @@
+# simple literal
+
+{}
+{1}
+{1, 2}
+{1,2}
+{ 1 , 2 }
+
+==>
+
+Source(
+  Tuple,
+  Tuple(
+    Integer),
+  Tuple(
+    Integer,
+    Integer),
+  Tuple(
+    Integer
+    Integer),
+  Tuple(
+    Integer,
+    Integer))
+
+# nested
+
+{{1}, 1}
+
+==>
+
+Source(
+  Tuple(
+    Tuple(
+      Integer),
+    Integer))
+
+# trailing separator
+
+{1,}
+{1,2,}
+
+==>
+
+Source(
+  Tuple(
+    Integer)
+  Tuple(
+    Integer,
+    Integer))
+
+# [error] missing element
+
+{, 1}
+
+==>
+
+Source(
+  Tuple(
+    ⚠,
+    Integer))
+
+# [error] missing separator
+
+{1 2}
+
+==>
+
+Source(
+  Tuple(
+    Integer,
+    ⚠(
+      Integer)))

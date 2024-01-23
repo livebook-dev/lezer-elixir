@@ -1,0 +1,74 @@
+# simple literal
+
+:atom
+:_az_AZ_19_
+:nonode@nohost
+:bang!
+:question?
+
+==>
+
+Source(
+  Atom,
+  Atom,
+  Atom,
+  Atom,
+  Atom)
+
+# operators
+
+[:~~~, :~>>, :~>, :|||, :||, :|>, :|, :>>>, :>=, :>, :=~, :===, :==, :=, :<~>, :<~, :<|>, :<>, :<=, :<<~, :<<<, :<-, :<, :+++, :++, :+, :^^^, :^, :&&&, :&&, :&, :\\, :/, :**, :*, :@, :.., :., :!==, :!=, :!, :::, :->, :---, :--, :-]
+
+==>
+
+Source(
+  List(Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom, Atom))
+
+# special operator-like atoms
+
+[:..., :%{}, :{}, :%, :<<>>, :..//]
+
+==>
+
+Source(
+  List(
+    Atom,
+    Atom,
+    Atom,
+    Atom,
+    Atom,
+    Atom))
+
+# quoted atom
+
+:"atom ?? !! ' \n"
+:'atom ?? !! " \n'
+
+==>
+
+Source(
+  QuotedAtom(
+    QuotedContent,
+    EscapeSequence),
+  QuotedAtom(
+    QuotedContent,
+    EscapeSequence))
+
+# interpolation
+
+:"hey #{name}!"
+:'hey #{name}!'
+
+==>
+
+Source(
+  QuotedAtom(
+    QuotedContent,
+    Interpolation(
+      Identifier),
+    QuotedContent),
+  QuotedAtom(
+    QuotedContent,
+    Interpolation(
+      Identifier),
+    QuotedContent))

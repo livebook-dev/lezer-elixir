@@ -1,0 +1,8 @@
+# simple literal
+
+nil
+
+==>
+
+Source(
+  Nil)

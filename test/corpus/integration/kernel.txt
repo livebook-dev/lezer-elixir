@@ -1,0 +1,146 @@
+# for / enumerable
+
+for n <- [1, 2], do: n * 2
+
+==>
+
+Source(
+  KernelCall(
+    Identifier,
+    Arguments(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        List(
+          Integer,
+          Integer)),
+      Keywords(
+        Pair(
+          Keyword,
+          BinaryOperator(
+            Identifier,
+            Operator,
+            Integer))))))
+
+# for / enumerable / with options and block
+
+for line <- IO.stream(), into: IO.stream() do
+  String.upcase(line)
+end
+
+==>
+
+Source(
+  KernelCall(
+    Identifier,
+    Arguments(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Call(
+          Dot(
+            Alias,
+            Operator,
+            Right(
+              Identifier)),
+          Arguments)),
+      Keywords(
+        Pair(
+          Keyword,
+          Call(
+            Dot(
+              Alias,
+              Operator,
+              Right(
+                Identifier)),
+            Arguments)))),
+    DoBlock(
+      "do",
+      Call(
+        Dot(
+          Alias,
+          Operator,
+          Right(
+            Identifier)),
+        Arguments(
+          Identifier)),
+      "end")))
+
+# for / binary
+
+for <<c <- " hello world ">>, c != ?\s, into: "", do: <<c>>
+
+==>
+
+Source(
+  KernelCall(
+    Identifier,
+    Arguments(
+      Bitstring(
+        BinaryOperator(
+          Identifier,
+          Operator,
+          String(
+            QuotedContent))),
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Char),
+      Keywords(
+        Pair(
+          Keyword,
+          String),
+        Pair(
+          Keyword,
+          Bitstring(
+            Identifier))))))
+
+# for / reduce
+
+for x <- [1, 2, 1], reduce: %{} do
+  acc -> Map.update(acc, x, 1, & &1 + 1)
+end
+
+==>
+
+Source(
+  KernelCall(
+    Identifier,
+    Arguments(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        List(
+          Integer,
+          Integer,
+          Integer)),
+      Keywords(
+        Pair(
+          Keyword,
+          Map))),
+    DoBlock(
+      "do",
+      StabClause(
+        Arguments(
+          Identifier),
+        Operator,
+        Body(
+          Call(
+            Dot(
+              Alias,
+              Operator,
+              Right(
+                Identifier)),
+            Arguments(
+              Identifier,
+              Identifier,
+              Integer,
+              CaptureOperator(
+                Operator,
+                BinaryOperator(
+                  CaptureOperand(
+                    Operator,
+                    Integer),
+                  Operator,
+                  Integer)))))),
+      "end")))

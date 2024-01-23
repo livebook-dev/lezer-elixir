@@ -1,0 +1,639 @@
+@precedence {
+  // Operators
+  captureOperand
+  atOp
+  dotOp
+  access
+  unaryOps
+  powerOp @left
+  multOps @left
+  addOps @left
+  rangeOp @right
+  concatOps @right
+  ternaryOp @right
+  xorOp @left
+  inOps @left
+  arrowOps @left
+  relOps @left
+  compOps @left
+  andOps @left
+  orOps @left
+  matchOp @right
+  captureOp
+  assocOp @right
+  barOp @right
+  typeOp @right
+  whenOp @right
+  inMatchOps @left
+  pair @right
+  // Other
+  mapOpenCut @cut
+  structIdentifier
+  tupleOpen
+  stabClauseArgumentsClose
+  captureClose
+  blockClose
+  doBlock @left
+  functionArgumentsCont @right
+}
+
+@top Source {
+  terminator? (expression (terminator expression)* terminator?)?
+}
+
+@skip { spaces | newline | "\\" newline | Comment | newlineBeforeBinaryOperator }
+
+expression {
+  Block |
+  // Note: the precedence forces a conflict between call identifier
+  // and binary left operand in `x + y`. Without this the conflict
+  // is resolved in favour of call, because the unary + has leading
+  // precedence set.
+  //
+  // Note: we list identifier types inline, rather than grouping them
+  // in a single term. There are several call nodes and each uses a
+  // subset of identifiers. By inlining them, we avoid some shift/reduce
+  // conflicts into such term.
+  regularIdentifier !unaryOps |
+  functionDefinitionIdentifier !unaryOps |
+  kernelIdentifier !unaryOps |
+  Alias |
+  Integer |
+  Float |
+  Char |
+  Boolean |
+  Nil |
+  atom |
+  String |
+  Charlist |
+  Sigil |
+  List |
+  Tuple |
+  Bitstring |
+  Map |
+  nullaryOperator |
+  unaryOperator |
+  binaryOperator |
+  Dot |
+  call |
+  AccessCall |
+  AnonymousFunction
+}
+
+Block {
+  "(" terminator? (StabClause (terminator StabClause)* | expression (terminator expression)* terminator?)? ")" !blockClose
+}
+
+terminator { ";" | newlineTerminator }
+
+Boolean { word<"true"> | word<"false"> }
+
+Nil { word<"nil"> }
+
+atom { Atom | QuotedAtom }
+
+Atom { atomWord | atomSpecial }
+
+QuotedAtom { ":" (quotedIDouble | quotedISingle) }
+
+String { quotedIDouble | quotedIHeredocDouble }
+
+Charlist { quotedISingle | quotedIHeredocSingle }
+
+quotedIDouble { quoted<'"', '"', quotedContentIDouble> }
+quotedISingle { quoted<"'", "'", quotedContentISingle> }
+quotedIHeredocDouble { quoted<'"""', '"""', quotedContentIHeredocDouble> }
+quotedIHeredocSingle { quoted<"'''", "'''", quotedContentIHeredocSingle> }
+quotedIParenthesis { quoted<"(", ")", quotedContentIParenthesis> }
+quotedICurly { quoted<"{", "}", quotedContentICurly> }
+quotedISquare { quoted<"[", "]", quotedContentISquare> }
+quotedIAngle { quoted<"<", ">", quotedContentIAngle> }
+quotedIBar { quoted<"|", "|", quotedContentIBar> }
+quotedISlash { quoted<"/", "/", quotedContentISlash> }
+quotedDouble { quoted<'"', '"', quotedContentDouble> }
+quotedSingle { quoted<"'", "'", quotedContentSingle> }
+quotedHeredocDouble { quoted<'"""', '"""', quotedContentHeredocDouble> }
+quotedHeredocSingle { quoted<"'''", "'''", quotedContentHeredocSingle> }
+quotedParenthesis { quoted<"(", ")", quotedContentParenthesis> }
+quotedCurly { quoted<"{", "}", quotedContentCurly> }
+quotedSquare { quoted<"[", "]", quotedContentSquare> }
+quotedAngle { quoted<"<", ">", quotedContentAngle> }
+quotedBar { quoted<"|", "|", quotedContentBar> }
+quotedSlash { quoted<"/", "/", quotedContentSlash> }
+
+quoted<start, end, content> {
+  start content? ((EscapeSequence | Interpolation) content?)* end
+}
+
+Interpolation { interpolationStart expression? interpolationEnd }
+
+Sigil {
+  "~" (
+    SigilName { sigilIName } (
+      quotedIDouble |
+      quotedISingle |
+      quotedIHeredocDouble |
+      quotedIHeredocSingle |
+      quotedIParenthesis |
+      quotedICurly |
+      quotedISquare |
+      quotedIAngle |
+      quotedIBar |
+      quotedISlash
+    ) |
+    SigilName { sigilName } (
+      quotedDouble |
+      quotedSingle |
+      quotedHeredocDouble |
+      quotedHeredocSingle |
+      quotedParenthesis |
+      quotedCurly |
+      quotedSquare |
+      quotedAngle |
+      quotedBar |
+      quotedSlash
+    )
+  )
+  SigilModifiers?
+}
+
+List { "[" itemsWithTrailingSeparator? "]" }
+
+Tuple { !tupleOpen "{" itemsWithTrailingSeparator? "}" }
+
+Bitstring { "<<" itemsWithTrailingSeparator? ">>" }
+
+Map {
+  // Note that we use a @cut precedence, so if we see "{" we interpret
+  // it as map immediately, rather than tuple
+  "%" Struct? !mapOpenCut "{" MapContent { itemsWithTrailingSeparator }? "}"
+}
+
+itemsWithTrailingSeparator {
+  expression ("," expression)* ","? |
+  (expression ("," expression)* ",")? keywordsWithTrailingSeparator
+}
+
+keywordsWithTrailingSeparator[@name=Keywords] {
+  Pair ("," Pair)* ","?
+}
+
+Keywords {
+  Pair (!pair "," Pair)*
+}
+
+Pair { keyword expression }
+
+keyword { Keyword | QuotedKeyword }
+
+Keyword { keywordWord | keywordSpecial }
+
+QuotedKeyword {
+  (quotedIDouble | quotedISingle) immediateColonWhitespace
+}
+
+Struct {
+  Alias |
+  atom |
+  (regularIdentifier | functionDefinitionIdentifier | kernelIdentifier) !structIdentifier |
+  unaryOperator |
+  Dot |
+  callWithParentheses
+}
+
+nullaryOperator {
+  OperatorIdentifier { !rangeOp opDoubleDot }
+}
+
+unaryOperator {
+  UnaryOperator | AtOperator | DocAtOperator | CaptureOperator | CaptureOperand
+}
+
+UnaryOperator[@dynamicPrecedence=-1] {
+  !unaryOps beforeUnaryOp? (opAdd | opUnaryOther | wopNot) expression
+}
+
+AtOperator {
+  !atOp opAt expression
+}
+
+DocAtOperator {
+  !atOp opDocAt expression
+}
+
+CaptureOperator {
+  !captureOp opCapture ~captureOrOperatorIdentifier captureExpression
+}
+
+captureExpression {
+  "(" expression ")" !captureClose |
+  expression
+}
+
+CaptureOperand {
+  !captureOperand opCapture Integer
+}
+
+binaryOperator {
+  BinaryOperator | WhenOperator | PipeOperator
+}
+
+BinaryOperator {
+  expression ~callIdentifierOrOperand !inMatchOps opInMatch expression |
+  expression ~callIdentifierOrOperand !typeOp opType expression |
+  expression ~callIdentifierOrOperand !barOp opBar (expression | Keywords) |
+  expression ~callIdentifierOrOperand !assocOp opAssoc expression |
+  expression ~callIdentifierOrOperand !matchOp opMatch expression |
+  expression ~callIdentifierOrOperand !orOps (opOr | wopOr) expression |
+  expression ~callIdentifierOrOperand !andOps (opAnd | wopAnd) expression |
+  expression ~callIdentifierOrOperand !compOps opComp expression |
+  expression ~callIdentifierOrOperand !relOps opRel expression |
+  expression ~callIdentifierOrOperand !arrowOps opArrow expression |
+  expression ~callIdentifierOrOperand !inOps (wopIn | wopNotIn) expression |
+  expression ~callIdentifierOrOperand !xorOp opXor expression |
+  expression ~callIdentifierOrOperand !ternaryOp opTernary expression |
+  expression ~callIdentifierOrOperand !concatOps opConcat expression |
+  expression ~callIdentifierOrOperand !rangeOp opDoubleDot expression |
+  expression ~callIdentifierOrOperand !addOps opAdd expression |
+  expression ~callIdentifierOrOperand !multOps (opStar | opSlash) expression |
+  expression ~callIdentifierOrOperand !powerOp opPower expression |
+  OperatorIdentifier !multOps opSlash Integer
+}
+
+WhenOperator {
+  expression ~callIdentifierOrOperand ~stabClauseArgumentsOrWhenOperand !whenOp wopWhen Right { (expression | Keywords) !whenOp }
+}
+
+PipeOperator {
+  expression ~callIdentifierOrOperand !arrowOps opPipe Right { expression !arrowOps }
+}
+
+OperatorIdentifier {
+  opCapture ~captureOrOperatorIdentifier |
+  !unaryOps (opAdd | opUnaryOther | wopNot) |
+  !atOp opAt |
+  opInMatch |
+  wopWhen |
+  opType |
+  opBar |
+  opMatch |
+  opOr |
+  wopOr |
+  opAnd |
+  wopAnd |
+  opComp |
+  opRel |
+  opArrow |
+  wopIn |
+  wopNotIn |
+  opXor |
+  opConcat |
+  opStar |
+  opSlash |
+  opPower |
+  opStab ~stabOrOperatorIdentifier
+}
+
+Dot { expression !dotOp opDot Right { (Alias | Tuple) !dotOp } }
+
+call { callWithoutParentheses | callWithParentheses }
+
+callWithoutParentheses {
+  localCallWithoutParentheses |
+  localCallJustDoBlock |
+  remoteCallWithoutParentheses
+}
+
+callWithParentheses {
+  localCallWithParentheses |
+  remoteCallWithParentheses |
+  anonymousCall |
+  doubleCall
+}
+
+localCallWithoutParentheses {
+  Call { localCallWithoutParenthesesT<regularIdentifier> } |
+  FunctionDefinitionCall { localCallWithoutParenthesesT<functionDefinitionIdentifier> } |
+  KernelCall { localCallWithoutParenthesesT<kernelIdentifier> }
+}
+
+localCallJustDoBlock {
+  Call { localCallJustDoBlockT<regularIdentifier> } |
+  KernelCall { localCallJustDoBlockT<kernelIdentifier> }
+}
+
+localCallWithParentheses {
+  Call { localCallWithParenthesesT<regularIdentifier> } |
+  FunctionDefinitionCall { localCallWithParenthesesT<functionDefinitionIdentifier> } |
+  KernelCall { localCallWithParenthesesT<kernelIdentifier> }
+}
+
+localCallWithoutParenthesesT<target> {
+  target ~callIdentifierOrOperand callArgumentsWithoutParentheses !doBlock (newlineBeforeDo? DoBlock)?
+}
+
+localCallWithParenthesesT<target> {
+  target callArgumentsWithParenthesesImmediate !doBlock (newlineBeforeDo? DoBlock)?
+}
+
+localCallJustDoBlockT<target> {
+  target !doBlock DoBlock
+}
+
+remoteCallWithoutParentheses[@name=Call] {
+  remoteDot ~callIdentifierOrOperand callArgumentsWithoutParentheses? !doBlock (newlineBeforeDo? DoBlock)?
+}
+
+remoteCallWithParentheses[@name=Call] {
+  remoteDot callArgumentsWithParenthesesImmediate !doBlock (newlineBeforeDo? DoBlock)?
+}
+
+remoteDot[@name=Dot] {
+  expression !dotOp opDot Right {
+    (
+      regularIdentifier | functionDefinitionIdentifier | kernelIdentifier |
+      Identifier { word<"and"> | word<"in"> | word<"not"> | word<"or"> | word<"when"> | word<"true"> | word<"false"> | word<"nil"> | word<"after"> | word<"catch"> | word<"do"> | word<"else"> | word<"end"> | word<"fn"> | word<"rescue"> } |
+      OperatorIdentifier {
+        opCapture |
+        opAdd |
+        opUnaryOther |
+        opInMatch |
+        opType |
+        opBar |
+        opMatch |
+        opOr |
+        opAnd |
+        opComp |
+        opRel |
+        opArrow |
+        opXor |
+        opConcat |
+        opStar |
+        opSlash |
+        opPower |
+        opStab
+      } |
+      String { quotedIDouble } |
+      Charlist { quotedISingle }
+    ) !dotOp
+  }
+}
+
+anonymousCall[@name=Call] {
+  anonymousDot callArgumentsWithParentheses
+}
+
+anonymousDot[@name=Dot] {
+  expression !dotOp opDot
+}
+
+doubleCall[@name=Call] {
+  (localCallWithParentheses | remoteCallWithParentheses | anonymousCall) callArgumentsWithParentheses !doBlock (newlineBeforeDo? DoBlock)?
+}
+
+callArgumentsWithParentheses[@name=Arguments] {
+  "(" callArgumentsWithTrailingSeparator? ")"
+}
+
+callArgumentsWithParenthesesImmediate[@name=Arguments] {
+  immediateParenOpen callArgumentsWithTrailingSeparator? ")"
+}
+
+callArgumentsWithTrailingSeparator {
+  expression ("," expression)* ("," keywordsWithTrailingSeparator)? |
+  keywordsWithTrailingSeparator
+}
+
+callArgumentsWithoutParentheses[@name=Arguments, @dynamicPrecedence=-1] {
+  expression (!functionArgumentsCont "," expression)* ("," Keywords)? |
+  Keywords
+}
+
+DoBlock {
+  wordNamed<"do"> terminator? (StabClause (terminator StabClause)* | expression (terminator expression)* terminator?)? (AfterBlock | RescueBlock | CatchBlock | ElseBlock)* wordNamed<"end">
+}
+
+AfterBlock { callKeywordBlock<"after"> }
+RescueBlock { callKeywordBlock<"rescue"> }
+CatchBlock { callKeywordBlock<"catch"> }
+ElseBlock { callKeywordBlock<"else"> }
+
+callKeywordBlock<term> {
+  wordNamed<term> terminator? (StabClause (terminator StabClause)* | expression (terminator expression)* terminator?)?
+}
+
+AccessCall {
+  expression !access immediateSquareOpen expression "]"
+}
+
+StabClause {
+  stabClauseLeft? opStab ~stabOrOperatorIdentifier Body?
+}
+
+stabClauseLeft {
+  stabClauseArgumentsWithParentheses |
+  stabClauseArgumentsWithParenthesesWithGuard |
+  stabClauseArgumentsWithoutParentheses |
+  stabClauseArgumentsWithoutParenthesesWithGuard
+}
+
+stabClauseArgumentsWithParentheses[@name=Arguments] {
+  "(" (expression ("," expression !whenOp)* ("," Keywords)? | Keywords)? ")" !stabClauseArgumentsClose
+}
+
+stabClauseArgumentsWithoutParentheses[@name=Arguments] {
+   (expression ("," expression !whenOp)* ("," Keywords)? | Keywords) !whenOp ~stabClauseArgumentsOrWhenOperand
+}
+
+stabClauseArgumentsWithParenthesesWithGuard[@name=WhenOperator] {
+  stabClauseArgumentsWithParentheses wopWhen expressionAsRight
+}
+
+stabClauseArgumentsWithoutParenthesesWithGuard[@name=WhenOperator, @dynamicPrecedence=1] {
+  stabClauseArgumentsWithoutParentheses wopWhen expressionAsRight
+}
+
+expressionAsRight[@name=Right] { expression }
+
+Body {
+  terminator |
+  terminator? expression (~maybeStabClauseTerminator terminator expression)* terminator? ~maybeStabClauseTerminator
+}
+
+AnonymousFunction {
+  wordNamed<"fn"> terminator? StabClause (terminator StabClause)* wordNamed<"end">
+}
+
+word<term> { @specialize<identifier, term> }
+wordNamed<term> { wrapper[@name={term}] { word<term> } }
+
+underscoredWord<term> { @specialize<underscoredIdentifier, term> }
+
+regularIdentifier {
+  Identifier { identifier } | SpecialIdentifier | UnderscoredIdentifier { underscoredIdentifier }
+}
+
+functionDefinitionIdentifier[@name=Identifier] {
+  word<"def"> | word<"defdelegate"> | word<"defguard"> | word<"defguardp"> | word<"defmacro"> | word<"defmacrop"> | word<"defn"> | word<"defnp"> | word<"defp">
+}
+
+kernelIdentifier[@name=Identifier] {
+  // Definition
+  word<"defexception"> | word<"defimpl"> | word<"defmodule"> | word<"defoverridable"> | word<"defprotocol"> | word<"defstruct"> |
+  // Other constructs
+  word<"alias"> | word<"case"> | word<"cond"> | word<"for"> | word<"if"> | word<"import"> | word<"quote"> | word<"raise"> | word<"receive"> | word<"require"> | word<"reraise"> | word<"super"> | word<"throw"> | word<"try"> | word<"unless"> | word<"unquote"> | word<"unquote_splicing"> | word<"use"> | word<"with">
+}
+
+SpecialIdentifier {
+  underscoredWord<"__MODULE__"> | underscoredWord<"__DIR__"> | underscoredWord<"__ENV__"> | underscoredWord<"__CALLER__"> | underscoredWord<"__STACKTRACE__">
+}
+
+wopAnd[@name=WordOperator] { word<"and"> }
+wopIn[@name=WordOperator] { word<"in"> }
+wopNotIn[@name=WordOperator] { notIn }
+wopNot[@name=WordOperator] { word<"not"> }
+wopOr[@name=WordOperator] { word<"or"> }
+wopWhen[@name=WordOperator] { word<"when"> }
+opDocAt[@name=Operator] { docAt }
+opTernary[@name=Operator] { doubleSlash }
+
+@external tokens notInToken from "./tokens.js" { notIn }
+// For as to why we need doubleSlash see
+// https://discuss.codemirror.net/t/contextual-tokenization-assignin-unexpected-token/7717
+@external tokens doubleSlashToken from "./tokens.js" { doubleSlash }
+@external tokens atToken from "./tokens.js" { docAt }
+@external tokens beforeUnaryOpToken from "./tokens.js" { beforeUnaryOp }
+@external tokens newlineTokens from "./tokens.js" { newlineTerminator, newlineBeforeBinaryOperator, newlineBeforeDo }
+@external tokens immediateTokens from "./tokens.js" {
+  immediateParenOpen[@name="("],
+  immediateSquareOpen[@name="["],
+  immediateColonWhitespace
+}
+@external tokens atomWordToken from "./tokens.js" { atomWord }
+@external tokens keywordWordToken from "./tokens.js" { keywordWord }
+@external tokens quotedContentTokens from "./tokens.js" {
+  quotedContentIDouble[@name=QuotedContent],
+  quotedContentISingle[@name=QuotedContent],
+  quotedContentIHeredocDouble[@name=QuotedContent],
+  quotedContentIHeredocSingle[@name=QuotedContent],
+  quotedContentIParenthesis[@name=QuotedContent],
+  quotedContentICurly[@name=QuotedContent],
+  quotedContentISquare[@name=QuotedContent],
+  quotedContentIAngle[@name=QuotedContent],
+  quotedContentIBar[@name=QuotedContent],
+  quotedContentISlash[@name=QuotedContent],
+  quotedContentDouble[@name=QuotedContent],
+  quotedContentSingle[@name=QuotedContent],
+  quotedContentHeredocDouble[@name=QuotedContent],
+  quotedContentHeredocSingle[@name=QuotedContent],
+  quotedContentParenthesis[@name=QuotedContent],
+  quotedContentCurly[@name=QuotedContent],
+  quotedContentSquare[@name=QuotedContent],
+  quotedContentAngle[@name=QuotedContent],
+  quotedContentBar[@name=QuotedContent],
+  quotedContentSlash[@name=QuotedContent]
+}
+@external tokens sigilTokens from "./tokens.js" { SigilModifiers }
+@external tokens identifierToken from "./tokens.js" { identifier, underscoredIdentifier }
+
+@tokens {
+  spaces { $[ \t]+ }
+  newline { "\r"? "\n" }
+  whitespace { $[ \t\r\n] }
+  whitespaces { whitespace+ }
+
+  digits { $[0-9]+ }
+  binDigits { $[0-1]+ }
+  octDigits { $[0-7]+ }
+  hexDigits { $[0-9a-fA-F]+ }
+  numberDec { tokenSep1<digits, "_"> }
+  numberBin { "0b" tokenSep1<binDigits, "_"> }
+  numberOct { "0o" tokenSep1<octDigits, "_"> }
+  numberHex { "0x" tokenSep1<hexDigits, "_"> }
+  Integer { numberDec | numberBin | numberOct | numberHex }
+
+  floatScientificPart { $[eE] $[-+]? Integer }
+  Float { numberDec "." numberDec floatScientificPart? }
+
+  @precedence { Float, Integer }
+
+  Char { "?" "\\"? _ }
+
+  aliasPart { $[A-Z] $[_a-zA-Z0-9]* }
+  Alias { tokenSep1<aliasPart, whitespaces? "." whitespaces?> }
+
+  Comment { "#" ![\r\n]* }
+
+  @precedence {interpolationStart, Comment}
+
+  hex { $[0-9a-fA-F] }
+
+  EscapeSequence {
+    "\\"
+    (
+      ![ux] |
+      "x" hex hex? |
+      "x" "{" hex+ "}" |
+      "u" hex hex hex hex |
+      "u" "{" hex+ "}"
+    )
+  }
+
+  sigilIName { $[a-z] }
+  sigilName { $[A-Z]+ }
+
+  atomSpecial {
+    ":" (atomOpeartorLiteral | "::" | atomSpecialLiteral)
+  }
+
+  keywordSpecial {
+    (atomOpeartorLiteral | atomSpecialLiteral) ":" whitespace
+  }
+
+  atomOpeartorLiteral {
+    // Opeators excluding => (not a valid atom) and :: (not a valid keyword)
+    "->" | "|" | "&" | "=" | "^^^" | "//" | ".." | "**" | "." | "@" | "<-" | "\\\\" | "||" | "|||" | "&&" | "&&&" | "==" | "!=" | "=~" | "===" | "!==" | "<" | ">" | "<=" | ">=" | "|>" | "<<<" | ">>>" | "<<~" | "~>>" | "<~" | "~>" | "<~>" | "<|>" | "++" | "--" | "+++" | "---" | "<>" | "+" | "-" | "*" | "/" | "+" | "-" | "!" | "^" | "~~~"
+  }
+
+  atomSpecialLiteral {
+    "..." | "%{}" | "{}" | "%" | "<<>>" | "..//"
+  }
+
+  tokenSep1<content, separator> {
+    content (separator content)*
+  }
+
+  "(" ")"
+  "[" "]"
+  "{" "}"
+  "<<"[closedBy=">>"]
+  ">>"[openedBy="<<"]
+  interpolationStart[@name="#{", closedBy=interpolationEnd] { "#{" }
+  interpolationEnd[@name="}", openedBy=interpolationStart] { "}" }
+
+  opAdd[@name=Operator] { "+" | "-" }
+  opUnaryOther[@name=Operator] { "!" | "^" | "~~~" }
+  opDoubleDot[@name=Operator] { ".." }
+  opInMatch[@name=Operator] { "<-" | "\\\\" }
+  opCapture[@name=Operator] { "&" }
+  opAt[@name=Operator] { "@" }
+  opType[@name=Operator] { "::" }
+  opBar[@name=Operator] { "|" }
+  opAssoc[@name=Operator] { "=>" }
+  opMatch[@name=Operator] { "=" }
+  opOr[@name=Operator] { "||" | "|||" }
+  opAnd[@name=Operator] { "&&" | "&&&" }
+  opComp[@name=Operator] { "==" | "!=" | "=~" | "===" | "!==" }
+  opRel[@name=Operator] { "<" | ">" | "<=" | ">=" }
+  opPipe[@name=Operator] { "|>" }
+  opArrow[@name=Operator] { "<<<" | ">>>" | "<<~" | "~>>" | "<~" | "~>" | "<~>" | "<|>" }
+  opXor[@name=Operator] { "^^^" }
+  opConcat[@name=Operator] { "++" | "--" | "+++" | "---" | "<>" }
+  opStar[@name=Operator] { "*" }
+  opSlash[@name=Operator] { "/" }
+  opPower[@name=Operator] { "**" }
+  opStab[@name=Operator] { "->" }
+  opDot[@name=Operator] { "." }
+}
+
+@external propSource elixirHighlighting from "./highlight.js"

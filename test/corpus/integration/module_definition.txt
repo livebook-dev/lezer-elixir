@@ -1,0 +1,151 @@
+# empty module definition
+
+defmodule Mod do
+end
+
+defmodule Mod.Child do
+end
+
+==>
+
+Source(
+  KernelCall(
+    Identifier,
+    Arguments(
+      Alias),
+    DoBlock(
+      "do",
+      "end")),
+  KernelCall(
+    Identifier,
+    Arguments(
+      Alias),
+    DoBlock(
+      "do",
+      "end")))
+
+# module definition with atom literal
+
+defmodule :mod do
+end
+
+==>
+
+Source(
+  KernelCall(
+    Identifier,
+    Arguments(
+      Atom),
+    DoBlock(
+      "do",
+      "end")))
+
+# full module definition
+
+defmodule Mod do
+  @moduledoc """
+  Example module
+  """
+
+  use UseMod
+
+  @attribute 1
+
+  @doc """
+  Example function
+  """
+  @spec func(integer) :: integer
+  def func(x) when is_integer(x) do
+    priv(x) + priv(x)
+  end
+
+  defp priv(x), do: x * x
+end
+
+==>
+
+Source(
+  KernelCall(
+    Identifier,
+    Arguments(
+      Alias),
+    DoBlock(
+      "do",
+      DocAtOperator(
+        Operator,
+        Call(
+          Identifier,
+          Arguments(
+            String(
+              QuotedContent)))),
+      KernelCall(
+        Identifier,
+        Arguments(
+          Alias)),
+      AtOperator(
+        Operator,
+        Call(
+          Identifier,
+          Arguments(
+            Integer))),
+      DocAtOperator(
+        Operator,
+        Call(
+          Identifier,
+          Arguments(
+            String(
+              QuotedContent)))),
+      AtOperator(
+        Operator,
+        Call(
+          Identifier,
+          Arguments(
+            BinaryOperator(
+              Call(
+                Identifier,
+                Arguments(
+                  Identifier)),
+              Operator,
+              Identifier)))),
+      FunctionDefinitionCall(
+        Identifier,
+        Arguments(
+          WhenOperator(
+            Call(
+              Identifier,
+              Arguments(
+                Identifier)),
+            WordOperator,
+            Right(
+              Call(
+                Identifier,
+                Arguments(
+                  Identifier))))),
+        DoBlock(
+          "do",
+          BinaryOperator(
+            Call(
+              Identifier,
+              Arguments(
+                Identifier)),
+            Operator,
+            Call(
+              Identifier,
+              Arguments(
+                Identifier))),
+          "end")),
+      FunctionDefinitionCall(
+        Identifier,
+        Arguments(
+          Call(
+            Identifier,
+            Arguments(
+              Identifier)),
+          Keywords(
+            Pair(
+              Keyword,
+              BinaryOperator(
+                Identifier,
+                Operator,
+                Identifier))))),
+      "end")))

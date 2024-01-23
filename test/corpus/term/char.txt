@@ -1,0 +1,49 @@
+# regular character
+
+?a
+?Z
+?0
+?9
+?_
+??
+
+==>
+
+Source(
+  Char,
+  Char,
+  Char,
+  Char,
+  Char,
+  Char)
+
+# escaped character
+
+?\n
+?\t
+?\s
+?\\
+?\a
+?\b
+
+==>
+
+Source(
+  Char,
+  Char,
+  Char,
+  Char,
+  Char,
+  Char)
+
+# list of char literals
+
+[?a, ?b, ?c]
+
+==>
+
+Source(
+  List(
+    Char,
+    Char,
+    Char))

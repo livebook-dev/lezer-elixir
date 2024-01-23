@@ -1,0 +1,55 @@
+# regular
+
+snake_case
+camelCase
+az_AZ_19
+bang!
+question?
+doctest
+not1
+notfalse
+
+==>
+
+Source(
+  Identifier,
+  Identifier,
+  Identifier,
+  Identifier,
+  Identifier,
+  Identifier,
+  Identifier,
+  Identifier)
+
+# unused
+
+_
+_number
+__TEST__
+
+==>
+
+Source(
+  UnderscoredIdentifier,
+  UnderscoredIdentifier,
+  UnderscoredIdentifier)
+
+# three dots Identifier
+
+...
+
+==>
+
+Source(
+  Identifier)
+
+# special Identifier
+
+__MODULE__
+__DIR__
+
+==>
+
+Source(
+  SpecialIdentifier,
+  SpecialIdentifier)

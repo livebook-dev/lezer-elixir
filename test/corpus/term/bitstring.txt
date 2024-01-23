@@ -1,0 +1,205 @@
+# single item
+
+<<>>
+<<10>>
+<<10.0>>
+<<"string">>
+
+==>
+
+Source(
+  Bitstring,
+  Bitstring(
+    Integer),
+  Bitstring(
+    Float),
+  Bitstring(
+    String(
+      QuotedContent)))
+
+# multiple items
+
+<<
+  10,
+  10.0,
+  "string"
+>>
+
+==>
+
+Source(
+  Bitstring(
+    Integer,
+    Float,
+    String(
+      QuotedContent)))
+
+# size modifiers
+
+<<10::4>>
+<<10::size(4)>>
+
+==>
+
+Source(
+  Bitstring(
+    BinaryOperator(
+      Integer,
+      Operator,
+      Integer)),
+  Bitstring(
+    BinaryOperator(
+      Integer,
+      Operator,
+      Call(
+        Identifier,
+        Arguments(
+          Integer)))))
+
+# multiple modifiers
+
+<<"string"::utf8-big>>
+<<"string"::utf16-big>>
+<<"string"::utf32-big>>
+<<10::32-little-unsigned>>
+<<10::integer-signed-big>>
+<<10.10::float-signed-native>>
+
+==>
+
+Source(
+  Bitstring(
+    BinaryOperator(
+      String(
+        QuotedContent),
+      Operator,
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier))),
+  Bitstring(
+    BinaryOperator(
+      String(
+        QuotedContent),
+      Operator,
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier))),
+  Bitstring(
+    BinaryOperator(
+      String(
+        QuotedContent),
+      Operator,
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Identifier))),
+  Bitstring(
+    BinaryOperator(
+      Integer,
+      Operator,
+      BinaryOperator(
+        BinaryOperator(
+          Integer,
+          Operator,
+          Identifier),
+        Operator,
+        Identifier))),
+  Bitstring(
+    BinaryOperator(
+      Integer,
+      Operator,
+      BinaryOperator(
+        BinaryOperator(
+          Identifier,
+          Operator,
+          Identifier),
+        Operator,
+        Identifier))),
+  Bitstring(
+    BinaryOperator(
+      Float,
+      Operator,
+      BinaryOperator(
+        BinaryOperator(
+          Identifier,
+          Operator,
+          Identifier),
+        Operator,
+        Identifier))))
+
+# multiple components with modifiers
+
+<<10::8-native, "string", 3.14::float, a::8, b::binary-size(known_size)>>
+
+==>
+
+Source(
+  Bitstring(
+    BinaryOperator(
+      Integer,
+      Operator,
+      BinaryOperator(
+        Integer,
+        Operator,
+        Identifier)),
+    String(
+      QuotedContent),
+    BinaryOperator(
+      Float,
+      Operator,
+      Identifier),
+    BinaryOperator(
+      Identifier,
+      Operator,
+      Integer),
+    BinaryOperator(
+      Identifier,
+      Operator,
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Call(
+          Identifier,
+          Arguments(
+            Identifier))))))
+
+# spacing
+
+<<
+  10 :: 8-native,
+  b :: binary - size(known_size)
+>>
+
+==>
+
+Source(
+  Bitstring(
+    BinaryOperator(
+      Integer,
+      Operator,
+      BinaryOperator(
+        Integer,
+        Operator,
+        Identifier)),
+    BinaryOperator(
+      Identifier,
+      Operator,
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Call(
+          Identifier,
+          Arguments(
+            Identifier))))))
+
+# trailing separator
+
+<<1,>>
+
+==>
+
+Source(
+  Bitstring(
+    Integer))

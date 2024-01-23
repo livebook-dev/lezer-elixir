@@ -1,0 +1,82 @@
+# single part
+
+Mod
+AZ_az_19_
+
+==>
+
+Source(
+  Alias,
+  Alias)
+
+# multiple parts
+
+Mod.Child
+Mod.Child.Child
+
+==>
+
+Source(
+  Alias,
+  Alias)
+
+# spacing
+
+Mod . Child
+
+Mod
+.
+Child
+
+==>
+
+Source(
+  Alias,
+  Alias)
+
+# qualified tuples
+
+Mod.{Child1, Child2}
+
+==>
+
+Source(
+  Dot(
+    Alias,
+    Operator,
+    Right(
+      Tuple(
+        Alias,
+        Alias))))
+
+# dot on identifier
+
+name.Mod
+name.Mod.Child
+
+==>
+
+Source(
+  Dot(
+    Identifier,
+    Operator,
+    Right(
+      Alias)),
+  Dot(
+    Identifier,
+    Operator,
+    Right(
+      Alias)))
+
+# dot on special identifier
+
+__MODULE__.Child
+
+==>
+
+Source(
+  Dot(
+    SpecialIdentifier,
+    Operator,
+    Right(
+      Alias)))

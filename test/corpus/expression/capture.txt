@@ -1,0 +1,159 @@
+# anonymous function
+
+& &1 + &2
+&(&1 + &2)
+&foo(&1, a, &2)
+
+==>
+
+Source(
+  CaptureOperator(
+    Operator,
+    BinaryOperator(
+      CaptureOperand(
+        Operator,
+        Integer),
+      Operator,
+      CaptureOperand(
+        Operator,
+        Integer))),
+  CaptureOperator(
+    Operator,
+    BinaryOperator(
+      CaptureOperand(
+        Operator,
+        Integer),
+      Operator,
+      CaptureOperand(
+        Operator,
+        Integer))),
+  CaptureOperator(
+    Operator,
+    Call(
+      Identifier,
+      Arguments(
+        CaptureOperand(
+          Operator,
+          Integer),
+        Identifier,
+        CaptureOperand(
+          Operator,
+          Integer)))))
+
+# argument call
+
+& &1.some_fun
+&(&1.some_fun)
+& &1.(&2)
+
+==>
+
+Source(
+  CaptureOperator(
+    Operator,
+    Call(
+      Dot(
+        CaptureOperand(
+          Operator,
+          Integer),
+        Operator,
+        Right(
+          Identifier)))),
+  CaptureOperator(
+    Operator,
+    Call(
+      Dot(
+        CaptureOperand(
+          Operator,
+          Integer),
+        Operator,
+        Right(
+          Identifier)))),
+  CaptureOperator(
+    Operator,
+    Call(
+      Dot(
+        CaptureOperand(
+          Operator,
+          Integer),
+        Operator),
+      Arguments(
+        CaptureOperand(
+          Operator,
+          Integer)))))
+
+# remote MFA
+
+&Mod.fun/1
+
+==>
+
+Source(
+  CaptureOperator(
+    Operator,
+    BinaryOperator(
+      Call(
+        Dot(
+          Alias,
+          Operator,
+          Right(
+            Identifier))),
+      Operator,
+      Integer)))
+
+# remote operator MFA
+
+&Kernel.>=/2
+
+==>
+
+Source(
+  CaptureOperator(
+    Operator,
+    BinaryOperator(
+      Call(
+        Dot(
+          Alias,
+          Operator,
+          Right(
+            OperatorIdentifier(
+              Operator)))),
+      Operator,
+      Integer)))
+
+# local MFA
+
+&fun/1
+
+==>
+
+Source(
+  CaptureOperator(
+    Operator,
+    BinaryOperator(
+      Identifier,
+      Operator,
+      Integer)))
+
+# local operator MFA
+
+&>=/2
+&//2
+
+==>
+
+Source(
+  CaptureOperator(
+    Operator,
+    BinaryOperator(
+      OperatorIdentifier(
+        Operator),
+      Operator,
+      Integer)),
+  CaptureOperator(
+    Operator,
+    BinaryOperator(
+      OperatorIdentifier(
+        Operator),
+      Operator,
+      Integer)))

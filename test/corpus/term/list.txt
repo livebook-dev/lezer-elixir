@@ -1,0 +1,77 @@
+# simple literal
+
+[]
+[a]
+[A]
+[1]
+[1, 2]
+[1,2]
+[ 1 , 2 ]
+
+==>
+
+Source(
+  List,
+  List(
+    Identifier),
+  List(
+    Alias),
+  List(
+    Integer),
+  List(
+    Integer,
+    Integer),
+  List(
+    Integer,
+    Integer),
+  List(
+    Integer,
+    Integer))
+
+# nested
+
+[[1], 1]
+
+==>
+
+Source(
+  List(
+    List(
+      Integer)
+    Integer))
+
+# trailing separator
+
+[1,]
+[1,2,]
+
+==>
+
+Source(
+  List(
+    Integer),
+  List(
+    Integer,
+    Integer))
+
+# [error] missing element
+
+[, 1]
+
+==>
+
+Source(
+  List(
+    ⚠,
+    Integer))
+
+# [error] missing separator
+
+[1 2]
+
+==>
+
+Source(
+  List(
+    Integer,
+    ⚠(Integer)))
