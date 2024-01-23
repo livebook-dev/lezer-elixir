@@ -20,6 +20,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install npm dependencies
-        run: npm ci
-      - run: npm run build
+        # See https://github.com/npm/cli/issues/4828
+        run: rm package-lock.json && npm i
       - run: npm test
