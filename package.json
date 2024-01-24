@@ -1,6 +1,6 @@
 {
   "name": "lezer-elixir",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "exports": {
     "import": "./dist/index.js",
