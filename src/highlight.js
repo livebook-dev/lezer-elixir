@@ -8,6 +8,7 @@ export const elixirHighlighting = styleTags({
   Nil: t.null,
   Integer: t.integer,
   Float: t.float,
+  Char: t.character,
   Identifier: t.variableName,
   Comment: t.lineComment,
   SpecialIdentifier: t.special(t.variableName),
