@@ -66,7 +66,7 @@ expression {
   atom |
   String |
   Charlist |
-  Sigil |
+  sigil |
   List |
   Tuple |
   Bitstring |
@@ -127,34 +127,40 @@ quoted<start, end, content> {
 
 Interpolation { interpolationStart expression? interpolationEnd }
 
+sigil { Sigil | StringSigil }
+
 Sigil {
-  "~" (
-    SigilName { sigilIName } (
-      quotedIDouble |
-      quotedISingle |
-      quotedIHeredocDouble |
-      quotedIHeredocSingle |
-      quotedIParenthesis |
-      quotedICurly |
-      quotedISquare |
-      quotedIAngle |
-      quotedIBar |
-      quotedISlash
-    ) |
-    SigilName { sigilName } (
-      quotedDouble |
-      quotedSingle |
-      quotedHeredocDouble |
-      quotedHeredocSingle |
-      quotedParenthesis |
-      quotedCurly |
-      quotedSquare |
-      quotedAngle |
-      quotedBar |
-      quotedSlash
-    )
-  )
-  SigilModifiers?
+  "~" (sigilIName anyQuotedI | sigilName anyQuoted) SigilModifiers?
+}
+
+StringSigil {
+  "~" (stringSigilIName anyQuotedI | stringSigilName anyQuoted) SigilModifiers?
+}
+
+anyQuotedI {
+  quotedIDouble |
+  quotedISingle |
+  quotedIHeredocDouble |
+  quotedIHeredocSingle |
+  quotedIParenthesis |
+  quotedICurly |
+  quotedISquare |
+  quotedIAngle |
+  quotedIBar |
+  quotedISlash
+}
+
+anyQuoted {
+  quotedDouble |
+  quotedSingle |
+  quotedHeredocDouble |
+  quotedHeredocSingle |
+  quotedParenthesis |
+  quotedCurly |
+  quotedSquare |
+  quotedAngle |
+  quotedBar |
+  quotedSlash
 }
 
 List { "[" itemsWithTrailingSeparator? "]" }
@@ -579,8 +585,11 @@ opTernary[@name=Operator] { doubleSlash }
     )
   }
 
-  sigilIName { $[a-z] }
-  sigilName { $[A-Z]+ }
+  sigilIName[@name=SigilName] { $[a-rt-z] }
+  sigilName[@name=SigilName] { $[A-RT-Z] | $[A-Z] $[A-Z]+ }
+  stringSigilIName[@name=SigilName] { "s" }
+  stringSigilName[@name=SigilName] { "S" }
+  @precedence { sigilName, stringSigilName }
 
   atomSpecial {
     ":" (atomOpeartorLiteral | "::" | atomSpecialLiteral)

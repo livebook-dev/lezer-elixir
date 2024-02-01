@@ -15,6 +15,8 @@ export const elixirHighlighting = styleTags({
   UnderscoredIdentifier: t.comment,
   "String String/QuotedContent": t.string,
   "Charlist Charlist/QuotedContent": t.string,
+  "StringSigil StringSigil/SigilName StringSigil/QuotedContent StringSigil/{ StringSigil/} StringSigil/[ StringSigil/] StringSigil/( StringSigil/)":
+    t.string,
   "Sigil Sigil/SigilName Sigil/QuotedContent Sigil/{ Sigil/} Sigil/[ Sigil/] Sigil/( Sigil/)":
     t.special(t.string),
   EscapeSequence: t.escape,
@@ -34,7 +36,7 @@ export const elixirHighlighting = styleTags({
   "AtOperator/Operator AtOperator/Identifier AtOperator/Boolean AtOperator/Nil AtOperator/Call/Identifier":
     t.attributeName,
   // Doc string (we don't use ! so that interpolation is not overridden)
-  "DocAtOperator/Operator DocAtOperator/Identifier DocAtOperator/Call/Identifier DocAtOperator/Call/Arguments/Boolean DocAtOperator/Call/Arguments/String DocAtOperator/Call/Arguments/String/QuotedContent DocAtOperator/Call/Arguments/Charlist DocAtOperator/Call/Arguments/Charlist/QuotedContent DocAtOperator/Call/Arguments/Sigil DocAtOperator/Call/Arguments/Sigil/QuotedContent DocAtOperator/Call/Arguments/Sigil/SigilName DocAtOperator/Call/Arguments/Sigil/{ DocAtOperator/Call/Arguments/Sigil/} DocAtOperator/Call/Arguments/Sigil/[ DocAtOperator/Call/Arguments/Sigil/] DocAtOperator/Call/Arguments/Sigil/( DocAtOperator/Call/Arguments/Sigil/)":
+  "DocAtOperator/Operator DocAtOperator/Identifier DocAtOperator/Call/Identifier DocAtOperator/Call/Arguments/Boolean DocAtOperator/Call/Arguments/String DocAtOperator/Call/Arguments/String/QuotedContent DocAtOperator/Call/Arguments/Charlist DocAtOperator/Call/Arguments/Charlist/QuotedContent DocAtOperator/Call/Arguments/StringSigil DocAtOperator/Call/Arguments/StringSigil/QuotedContent DocAtOperator/Call/Arguments/StringSigil/SigilName DocAtOperator/Call/Arguments/StringSigil/{ DocAtOperator/Call/Arguments/StringSigil/} DocAtOperator/Call/Arguments/StringSigil/[ DocAtOperator/Call/Arguments/StringSigil/] DocAtOperator/Call/Arguments/StringSigil/( DocAtOperator/Call/Arguments/StringSigil/)":
     t.docString,
   // Function calls
   "Call/Identifier Call/UnderscoredIdentifier": t.function(t.variableName),

@@ -47,6 +47,10 @@ one. The following additional nodes are present:
   - `WhenOperator` (`left when right`)
   - `PipeOperator` (`left |> right`)
 
+- `Sigil` specializations
+
+  - `StringSigil` (`~s"string"`, `~S"string"`)
+
 - named operator groups
 
   - `Operator` (`+`)

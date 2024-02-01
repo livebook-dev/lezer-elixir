@@ -12,7 +12,7 @@
 ==>
 
 Source(
-  Sigil(SigilName, QuotedContent),
+  StringSigil(SigilName, QuotedContent),
   Sigil(SigilName, QuotedContent),
   Sigil(SigilName, QuotedContent),
   Sigil(SigilName, QuotedContent),
@@ -30,7 +30,7 @@ line 2"
 ==>
 
 Source(
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent))
 
@@ -45,7 +45,7 @@ Source(
 ==>
 
 Source(
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent,
     Interpolation(
@@ -71,11 +71,11 @@ Source(
 ==>
 
 Source(
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent,
     Interpolation(
-      Sigil(
+      StringSigil(
         SigilName,
         QuotedContent,
         Interpolation(
@@ -89,7 +89,7 @@ Source(
 ==>
 
 Source(
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent,
     EscapeSequence,
@@ -119,7 +119,7 @@ Source(
 ==>
 
 Source(
-  Sigil(
+  StringSigil(
     SigilName,
     EscapeSequence,
     QuotedContent))
@@ -131,7 +131,7 @@ Source(
 ==>
 
 Source(
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent))
 
@@ -142,7 +142,7 @@ Source(
 ==>
 
 Source(
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent))
 
@@ -155,17 +155,17 @@ Source(
 ==>
 
 Source(
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent,
     EscapeSequence,
     QuotedContent),
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent,
     EscapeSequence,
     QuotedContent),
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent,
     EscapeSequence,
@@ -197,10 +197,10 @@ with 'quotes'
 ==>
 
 Source(
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent),
-  Sigil(
+  StringSigil(
     SigilName,
     QuotedContent))
 
