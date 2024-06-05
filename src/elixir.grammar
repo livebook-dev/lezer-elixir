@@ -586,7 +586,7 @@ opTernary[@name=Operator] { doubleSlash }
   }
 
   sigilIName[@name=SigilName] { $[a-rt-z] }
-  sigilName[@name=SigilName] { $[A-RT-Z] | $[A-Z] $[A-Z]+ }
+  sigilName[@name=SigilName] { $[A-RT-Z] | $[A-Z] $[A-Z0-9]+ }
   stringSigilIName[@name=SigilName] { "s" }
   stringSigilName[@name=SigilName] { "S" }
   @precedence { sigilName, stringSigilName }

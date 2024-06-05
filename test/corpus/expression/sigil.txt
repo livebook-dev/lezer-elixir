@@ -174,10 +174,18 @@ Source(
 # upper sigil / multiple characters
 
 ~MAT"1 2"
+~I18N"text"
+~A1B2"text"
 
 ==>
 
 Source(
+  Sigil(
+    SigilName,
+    QuotedContent),
+  Sigil(
+    SigilName,
+    QuotedContent),
   Sigil(
     SigilName,
     QuotedContent))
