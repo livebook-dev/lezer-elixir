@@ -1,6 +1,7 @@
 {
   "name": "lezer-elixir",
   "version": "1.1.2",
+  "license": "Apache-2.0",
   "type": "module",
   "exports": {
     "import": "./dist/index.js",
