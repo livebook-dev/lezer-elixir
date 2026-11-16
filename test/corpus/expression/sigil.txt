@@ -239,6 +239,47 @@ Source(
     QuotedContent,
     SigilModifiers))
 
+# regex followed by do block
+
+if s =~ ~r/foo/ do
+  1
+end
+
+if s =~ ~r/foo/i do
+  1
+end
+
+==>
+
+Source(
+  KernelCall(
+    Identifier,
+    Arguments(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Sigil(
+          SigilName,
+          QuotedContent))),
+    DoBlock(
+      "do",
+      Integer,
+      "end")),
+  KernelCall(
+    Identifier,
+    Arguments(
+      BinaryOperator(
+        Identifier,
+        Operator,
+        Sigil(
+          SigilName,
+          QuotedContent,
+          SigilModifiers))),
+    DoBlock(
+      "do",
+      Integer,
+      "end")))
+
 # [error] accepts only a single character
 
 ~mysigil"content"

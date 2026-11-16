@@ -289,6 +289,8 @@ function checkQuotedContent(input, info) {
 }
 
 export const sigilTokens = new ExternalTokenizer((input, stack) => {
+  if (isWhitespace(input.peek(-1))) return;
+
   let length = 0;
 
   while (
